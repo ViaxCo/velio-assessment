@@ -143,9 +143,14 @@ class Api {
   Stream<AvailabilityEvent> availability(String activityId, {required void Function() onOpen}) async* {
     final client = http.Client();
     try {
-      final response = await client.send(http.Request('GET', Uri.parse('$apiUrl/stream?activityId=$activityId')));
+      final response = await client
+          .send(http.Request('GET', Uri.parse('$apiUrl/stream?activityId=$activityId')))
+          .timeout(const Duration(seconds: 8));
       onOpen();
-      final lines = response.stream.transform(utf8.decoder).transform(const LineSplitter());
+      final lines = response.stream
+          .timeout(const Duration(seconds: 30))
+          .transform(utf8.decoder)
+          .transform(const LineSplitter());
       await for (final line in lines) {
         if (line.startsWith('data: ')) yield AvailabilityEvent.fromJson(jsonDecode(line.substring(6)));
       }
