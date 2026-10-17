@@ -49,7 +49,7 @@ async function takeSpot(
   try {
     const { activity, booking } = await db.transaction(work);
     record("success");
-    await live.publish({
+    void live.publish({
       activityId: activity.id,
       spotsTaken: activity.spotsTaken,
       capacity: activity.capacity,
