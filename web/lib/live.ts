@@ -19,6 +19,7 @@ export function useLiveAvailability(activityId?: string) {
 
     source.onopen = () => {
       queryClient.invalidateQueries({ queryKey: activityId ? ["activity", activityId] : ["activities"] });
+      queryClient.invalidateQueries({ queryKey: ["invite"] });
     };
 
     source.onmessage = (message) => {
