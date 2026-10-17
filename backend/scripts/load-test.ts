@@ -65,12 +65,18 @@ const activity = (await call(`/activities/${activityId}`)).body;
 const oversold = activity.attendees.length > CAPACITY || activity.attendees.length !== activity.spotsTaken;
 const successPct = (100 * created) / (created + errors);
 const p95 = percentile(latencies, 95);
+const expectedUpdates = created * LISTENERS;
 
 console.log(`${BOOKERS} bookers, ${CAPACITY} spots, ${CONCURRENCY} at a time, ${LISTENERS} open clients, ${seconds.toFixed(1)}s`);
 console.log(`Booked ${created}, sold out ${soldOut}, errors ${errors}`);
-console.log(`Updates received ${latencies.length}, expected ${created * LISTENERS}`);
+console.log(`Updates received ${latencies.length}, expected ${expectedUpdates}`);
 console.table([
   { slo: "Zero oversold bookings", target: "0", actual: oversold ? "OVERSOLD" : "0", met: !oversold },
   { slo: "Bookings succeed when spots exist", target: ">= 99.5%", actual: `${successPct.toFixed(2)}%`, met: successPct >= 99.5 },
-  { slo: "Availability update p95", target: "<= 2000 ms", actual: `${p95} ms (p50 ${percentile(latencies, 50)} ms)`, met: p95 <= 2000 },
+  {
+    slo: "Availability update p95",
+    target: "<= 2000 ms, every update delivered",
+    actual: `${p95} ms (p50 ${percentile(latencies, 50)} ms), ${latencies.length} of ${expectedUpdates}`,
+    met: p95 <= 2000 && latencies.length === expectedUpdates,
+  },
 ]);

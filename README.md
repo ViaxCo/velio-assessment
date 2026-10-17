@@ -167,7 +167,7 @@ Enter a code or paste a link, see the activity, and claim a spot.
 | --- | --- | --- | --- |
 | Zero oversold bookings | 0 | 0 | Yes |
 | Bookings succeed when spots exist | ≥ 99.5% | 100% | Yes |
-| Availability update p95 | ≤ 2 s | 2 ms (p50 1 ms) | Yes |
+| Availability update p95, every update delivered | ≤ 2 s, 100% | 2 ms (p50 1 ms), 10,000 of 10,000 | Yes |
 
 **SQL views:** connect with `psql postgresql://velio:velio@localhost:5433/velio`.
 
