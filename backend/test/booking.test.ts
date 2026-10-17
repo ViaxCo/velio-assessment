@@ -41,9 +41,9 @@ describe("booking the last spots", () => {
     expect(await servers.db("check_oversold")).toEqual([]);
   });
 
-  it("books one spot when the same person taps many times at once", async () => {
+  it("books one spot when the same person taps the last spot many times at once", async () => {
     const host = await servers.createUser("Host");
-    const activityId = await servers.createActivity(host, 3);
+    const activityId = await servers.createActivity(host, 1);
     const userId = await servers.createUser("Double tapper");
 
     const results = await Promise.all(

@@ -58,9 +58,10 @@ async function takeSpot(
     });
     return { booking, created: true };
   } catch (error) {
-    if (isUniqueViolation(error, "bookings_activity_id_user_id_key")) {
+    const booking = await existingBooking().catch(() => undefined);
+    if (booking) {
       record("already_booked");
-      return { booking: await existingBooking(), created: false };
+      return { booking, created: false };
     }
     const failure = isUniqueViolation(error, "attributions_vouch_once") ? inviteUsed() : error;
     record(failure instanceof AppError ? failure.code : "error");
