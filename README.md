@@ -109,7 +109,7 @@ I chose SSE over WebSockets because the data goes one way, it works through most
 
 - `INVITES_ENABLED=false` turns invites off for everyone.
 - `INVITE_HOLDOUT_PERCENT` (default 10) puts that share of users in a holdout group. The group comes from a hash of the user id, so it never changes for a person. Holdout users can book but cannot create invites. The web app hides the invite panel for them.
-- The view `holdout_plans_that_happen` compares the two groups for original users only (generation 0). For each user, it counts the plans they booked into that had 2 or more people and whose start time has passed. If treatment users have more plans that happen than holdout users, invites cause more plans, not only correlate with engaged users.
+- The view `holdout_plans_that_happen` compares the two groups for original users only (generation 0). For each user, it counts the activities they hosted or booked that started with 2 or more bookings. Both groups can reach this outcome without invites, so the comparison is fair. Because the groups are random, a higher rate in the treatment group shows that invites cause more plans to happen, not only that engaged users invite more.
 
 ### Web app
 
@@ -176,7 +176,7 @@ SELECT * FROM goal_bookers_who_invite;     -- share of bookers who create an inv
 SELECT * FROM goal_invite_conversion;      -- share of opened invites that end in a claimed spot, by rail (target 25%)
 SELECT * FROM goal_k_factor;               -- new users brought in per existing user, by rail
 SELECT * FROM metric_funnel;               -- viewed → booked → invite created → opened → claimed, by rail
-SELECT * FROM holdout_plans_that_happen;   -- treatment vs. holdout: plans with 2+ people that happened
+SELECT * FROM holdout_plans_that_happen;   -- treatment vs. holdout: activities that ran with 2+ bookings
 SELECT * FROM check_oversold;              -- should always be empty
 ```
 

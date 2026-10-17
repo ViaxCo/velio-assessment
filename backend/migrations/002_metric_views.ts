@@ -66,19 +66,16 @@ export async function up(knex: Knex) {
     GROUP BY ROLLUP (r.rail);
 
     CREATE VIEW holdout_plans_that_happen AS
-    WITH plan_sizes AS (
-      SELECT p.id, a.starts_at, count(b.id) AS members
-      FROM plans p
-      JOIN activities a ON a.id = p.activity_id
-      JOIN bookings b ON b.plan_id = p.id
-      GROUP BY p.id, a.starts_at
+    WITH memberships AS (
+      SELECT host_id AS user_id, id AS activity_id FROM activities
+      UNION
+      SELECT user_id, activity_id FROM bookings
     ),
     per_user AS (
-      SELECT u.id, u.invite_group,
-             count(ps.id) FILTER (WHERE ps.members >= 2 AND ps.starts_at < now()) AS plans_happened
+      SELECT u.id, u.invite_group, count(a.id) AS plans_happened
       FROM users u
-      LEFT JOIN bookings b ON b.user_id = u.id
-      LEFT JOIN plan_sizes ps ON ps.id = b.plan_id
+      LEFT JOIN memberships m ON m.user_id = u.id
+      LEFT JOIN activities a ON a.id = m.activity_id AND a.starts_at < now() AND a.spots_taken >= 2
       WHERE u.generation = 0
       GROUP BY u.id, u.invite_group
     )
