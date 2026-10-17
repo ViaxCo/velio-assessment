@@ -6,6 +6,7 @@ import { Card, Notice, Skeleton } from "@/components/ui";
 import { API_URL, api, type Stats } from "@/lib/api";
 
 const FUNNEL = ["activity_viewed", "booked", "invite_created", "invite_opened", "spot_claimed"];
+const RAIL_STEPS = new Set(["invite_created", "invite_opened", "spot_claimed"]);
 
 const pct = (value: number | null) => (value === null ? "—" : `${value}%`);
 
@@ -119,14 +120,17 @@ function FunnelTable({ funnel }: { funnel: Stats["funnel"] }) {
           </tr>
         </thead>
         <tbody className="divide-y divide-line">
-          {FUNNEL.map((step) => (
-            <tr key={step}>
-              <td className="py-2">{step.replace("_", " ")}</td>
-              <td className="py-2 text-right">{count(step)}</td>
-              <td className="py-2 text-right">{step.startsWith("invite") || step === "spot_claimed" ? count(step, "vouch") : ""}</td>
-              <td className="py-2 text-right">{step.startsWith("invite") || step === "spot_claimed" ? count(step, "public") : ""}</td>
-            </tr>
-          ))}
+          {FUNNEL.map((step) => {
+            const byRail = RAIL_STEPS.has(step);
+            return (
+              <tr key={step}>
+                <td className="py-2">{step.replace("_", " ")}</td>
+                <td className="py-2 text-right">{count(step)}</td>
+                <td className="py-2 text-right">{byRail && count(step, "vouch")}</td>
+                <td className="py-2 text-right">{byRail && count(step, "public")}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
