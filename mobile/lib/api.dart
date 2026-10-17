@@ -91,11 +91,9 @@ class Invite {
 
 class AvailabilityEvent {
   AvailabilityEvent.fromJson(Map<String, dynamic> json)
-    : activityId = json['activityId'],
-      spotsTaken = json['spotsTaken'],
+    : spotsTaken = json['spotsTaken'],
       version = json['version'];
 
-  final String activityId;
   final int spotsTaken;
   final int version;
 }

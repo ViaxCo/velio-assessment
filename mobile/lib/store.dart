@@ -19,7 +19,7 @@ class Store {
   }
 
   String? get name => _prefs.getString('name');
-  set name(String? value) => value == null ? _prefs.remove('name') : _prefs.setString('name', value);
+  set name(String value) => _prefs.setString('name', value);
 
   Map<String, dynamic>? cachedInvite(String code) {
     final raw = _prefs.getString('invite:$code');

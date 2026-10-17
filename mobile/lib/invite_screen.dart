@@ -104,17 +104,14 @@ class _InviteScreenState extends State<InviteScreen> {
         ..name = name
         ..markClaimed(widget.code);
       HapticFeedback.mediumImpact();
-      setState(() => _claimed = true);
+      _claimed = true;
     } on ApiException catch (error) {
       HapticFeedback.heavyImpact();
-      setState(() {
-        _claimError = error;
-        if (error.code == 'sold_out') _invite = _invite!.copyWith(activity: _invite!.activity.full());
-        if (error.code == 'invite_used') _invite = _invite!.copyWith(used: true);
-      });
-    } finally {
-      if (mounted) setState(() => _claiming = false);
+      _claimError = error;
+      if (error.code == 'sold_out') _invite = _invite!.copyWith(activity: _invite!.activity.full());
+      if (error.code == 'invite_used') _invite = _invite!.copyWith(used: true);
     }
+    if (mounted) setState(() => _claiming = false);
   }
 
   @override
