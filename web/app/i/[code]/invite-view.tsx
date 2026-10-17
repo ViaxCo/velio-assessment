@@ -11,7 +11,13 @@ import { useIdentity } from "@/lib/identity";
 import { useLiveAvailability } from "@/lib/live";
 
 export function InviteView({ code }: { code: string }) {
-  const invite = useQuery({ queryKey: ["invite", code], queryFn: () => api.getInvite(code), retry: false });
+  const { userId } = useIdentity();
+  const invite = useQuery({
+    queryKey: ["invite", code, userId],
+    queryFn: () => api.getInvite(code, userId!),
+    enabled: Boolean(userId),
+    retry: false,
+  });
 
   if (invite.isPending) return <Skeleton className="h-64" />;
   if (invite.isError) {
@@ -78,7 +84,7 @@ function ClaimState({ invite }: { invite: InviteDetail }) {
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["invite", invite.code] }),
   });
 
-  if (claim.isSuccess) {
+  if (claim.isSuccess || invite.joined) {
     return (
       <>
         <Notice tone="success" title="You're in the plan!">

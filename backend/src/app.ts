@@ -126,7 +126,13 @@ export function createApp(db: Db, live: Live) {
 
   app.get("/invites/:code", async (req, res) => {
     const invite = await findInvite(db, req.params.code.toUpperCase());
-    res.json({ ...invite, activity: await findActivity(invite.activityId) });
+    const userId = req.header("x-user-id");
+    const joined = Boolean(
+      userId &&
+        uuid.safeParse(userId).success &&
+        (await db("bookings").where({ activity_id: invite.activityId, user_id: userId }).first()),
+    );
+    res.json({ ...invite, joined, activity: await findActivity(invite.activityId) });
   });
 
   app.post("/invites/:code/claim", async (req, res) => {

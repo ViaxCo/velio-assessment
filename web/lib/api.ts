@@ -46,6 +46,7 @@ export type InviteDetail = Invite & {
   inviterId: string;
   inviterName: string;
   used: boolean;
+  joined: boolean;
   activity: Activity;
 };
 
@@ -89,7 +90,7 @@ export const api = {
     request<Booking>(`/activities/${activityId}/bookings`, { method: "POST", userId }),
   createInvite: (userId: string, activityId: string, body: { rail: Rail; recipient?: string }) =>
     request<Invite>(`/activities/${activityId}/invites`, { method: "POST", userId, body }),
-  getInvite: (code: string) => request<InviteDetail>(`/invites/${code}`),
+  getInvite: (code: string, userId: string) => request<InviteDetail>(`/invites/${code}`, { userId }),
   claim: (code: string, userId: string, name: string) =>
     request<Booking>(`/invites/${code}/claim`, { method: "POST", body: { userId, name } }),
   track: (body: { name: "activity_viewed"; activityId: string; actorId: string } | { name: "invite_opened"; code: string; actorId: string }) =>

@@ -67,6 +67,11 @@ describe("invites and attribution", () => {
     const activity = await servers.db("activities").where({ id: activityId }).first();
     expect(activity.spotsTaken).toBe(1);
     expect(await servers.db("users").whereIn("id", guests)).toHaveLength(1);
+
+    const winner = guests[results.findIndex((result) => result.status === 201)];
+    const seenBy = async (userId: string) => (await servers.request(url, `/invites/${vouch.code}`, { userId })).body;
+    expect(await seenBy(winner)).toMatchObject({ used: true, joined: true });
+    expect(await seenBy(guests.find((guest) => guest !== winner)!)).toMatchObject({ used: true, joined: false });
   });
 
   it("keeps attribution and events append-only", async () => {
