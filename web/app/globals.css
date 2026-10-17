@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-canvas: #fbf8f4;
+  --color-card: #ffffff;
+  --color-ink: #1c1917;
+  --color-muted: #78716c;
+  --color-line: #e7e1d9;
+  --color-sunset: #e8552d;
+  --color-sunset-soft: #fdebe4;
+  --color-lagoon: #0f766e;
+  --color-lagoon-soft: #e0f2ef;
+  --font-sans: var(--font-geist-sans);
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+}
