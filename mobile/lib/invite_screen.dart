@@ -111,6 +111,7 @@ class _InviteScreenState extends State<InviteScreen> {
       widget.store.name = name;
       HapticFeedback.mediumImpact();
       _invite = _invite!.copyWith(joined: true);
+      widget.store.saveInvite({...widget.store.cachedInvite(widget.code)!, 'joined': true});
       _load();
     } on ApiException catch (error) {
       HapticFeedback.heavyImpact();
