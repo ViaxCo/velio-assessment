@@ -38,13 +38,6 @@ async function takeSpot(
   work: (trx: Knex.Transaction) => ReturnType<typeof reserveSpot>,
 ) {
   const record = (outcome: string) => bookingAttempts.inc({ source, outcome });
-  const existingBooking = () => db("bookings").where({ activity_id: activityId, user_id: userId }).first();
-
-  const existing = await existingBooking();
-  if (existing) {
-    record("already_booked");
-    return { booking: existing, created: false };
-  }
 
   try {
     const { activity, booking } = await db.transaction(work);
@@ -58,7 +51,10 @@ async function takeSpot(
     });
     return { booking, created: true };
   } catch (error) {
-    const booking = await existingBooking().catch(() => undefined);
+    const booking = await db("bookings")
+      .where({ activity_id: activityId, user_id: userId })
+      .first()
+      .catch(() => undefined);
     if (booking) {
       record("already_booked");
       return { booking, created: false };

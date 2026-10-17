@@ -72,6 +72,7 @@ describe("invites and attribution", () => {
     const seenBy = async (userId: string) => (await servers.request(url, `/invites/${vouch.code}`, { userId })).body;
     expect(await seenBy(winner)).toMatchObject({ used: true, joined: true });
     expect(await seenBy(guests.find((guest) => guest !== winner)!)).toMatchObject({ used: true, joined: false });
+    expect((await claim(vouch.code, winner)).status).toBe(200);
   });
 
   it("keeps attribution and events append-only", async () => {
