@@ -67,14 +67,16 @@ class Invite {
       recipient = json['recipient'],
       inviterName = json['inviterName'],
       used = json['used'],
+      joined = json['joined'] == true,
       activity = Activity.fromJson(json['activity']);
 
-  Invite._(Invite invite, {Activity? activity, bool? used})
+  Invite._(Invite invite, {Activity? activity, bool? used, bool? joined})
     : code = invite.code,
       rail = invite.rail,
       recipient = invite.recipient,
       inviterName = invite.inviterName,
       used = used ?? invite.used,
+      joined = joined ?? invite.joined,
       activity = activity ?? invite.activity;
 
   final String code;
@@ -82,11 +84,13 @@ class Invite {
   final String? recipient;
   final String inviterName;
   final bool used;
+  final bool joined;
   final Activity activity;
 
   bool get isVouch => rail == 'vouch';
 
-  Invite copyWith({Activity? activity, bool? used}) => Invite._(this, activity: activity, used: used);
+  Invite copyWith({Activity? activity, bool? used, bool? joined}) =>
+      Invite._(this, activity: activity, used: used, joined: joined);
 }
 
 class AvailabilityEvent {
@@ -117,7 +121,8 @@ class Api {
 
   String get _platform => Platform.isIOS ? 'ios' : 'android';
 
-  Future<Map<String, dynamic>> getInvite(String code) => _send(() => _client.get(Uri.parse('$apiUrl/invites/$code')));
+  Future<Map<String, dynamic>> getInvite(String code, String userId) =>
+      _send(() => _client.get(Uri.parse('$apiUrl/invites/$code'), headers: {'x-user-id': userId}));
 
   Future<void> trackOpened(String code, String actorId) => _send(
     () => _client.post(
@@ -135,10 +140,11 @@ class Api {
     ),
   );
 
-  Stream<AvailabilityEvent> availability(String activityId) async* {
+  Stream<AvailabilityEvent> availability(String activityId, {required void Function() onOpen}) async* {
     final client = http.Client();
     try {
       final response = await client.send(http.Request('GET', Uri.parse('$apiUrl/stream?activityId=$activityId')));
+      onOpen();
       final lines = response.stream.transform(utf8.decoder).transform(const LineSplitter());
       await for (final line in lines) {
         if (line.startsWith('data: ')) yield AvailabilityEvent.fromJson(jsonDecode(line.substring(6)));

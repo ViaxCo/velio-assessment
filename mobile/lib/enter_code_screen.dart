@@ -95,7 +95,7 @@ class _EnterCodeScreenState extends State<EnterCodeScreen> {
                   color: Colors.white,
                   child: ListTile(
                     title: Text(invite.activity.title),
-                    subtitle: Text('From ${invite.inviterName}${widget.store.claimed(invite.code) ? ' · You’re in' : ''}'),
+                    subtitle: Text('From ${invite.inviterName}${invite.joined ? ' · You’re in' : ''}'),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => _open(invite.code),
                   ),

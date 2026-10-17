@@ -25,36 +25,60 @@ class _InviteScreenState extends State<InviteScreen> {
   ApiException? _loadError;
   bool _offline = false;
   bool _claiming = false;
-  bool _claimed = false;
   ApiException? _claimError;
   bool _tracked = false;
   StreamSubscription<AvailabilityEvent>? _live;
-  Timer? _reconnect;
+  Timer? _retry;
 
   @override
   void initState() {
     super.initState();
     final cached = widget.store.cachedInvite(widget.code);
     if (cached != null) _invite = Invite.fromJson(cached);
-    _claimed = widget.store.claimed(widget.code);
-    _load();
+    _connect();
   }
 
   @override
   void dispose() {
     _live?.cancel();
-    _reconnect?.cancel();
+    _retry?.cancel();
     _name.dispose();
     super.dispose();
   }
 
-  Future<void> _load() async {
+  Future<void> _connect() async {
+    _retry?.cancel();
+    _live?.cancel();
+    if (_invite == null && !await _load()) {
+      if (_loadError?.isOffline ?? false) _retryLater();
+      return;
+    }
+    if (!mounted) return;
+    _live = widget.api.availability(_invite!.activity.id, onOpen: _load).listen(
+      (event) => setState(() => _invite = _invite!.copyWith(activity: _invite!.activity.apply(event))),
+      onError: (_) => _retryLater(),
+      onDone: _retryLater,
+      cancelOnError: true,
+    );
+  }
+
+  void _retryLater() {
+    if (_invite != null) setState(() => _offline = true);
+    _retry?.cancel();
+    _retry = Timer(const Duration(seconds: 3), () {
+      if (mounted) _connect();
+    });
+  }
+
+  Future<bool> _load() async {
     try {
-      final json = await widget.api.getInvite(widget.code);
+      final json = await widget.api.getInvite(widget.code, widget.store.deviceId);
       widget.store.saveInvite(json);
-      if (!mounted) return;
+      if (!mounted) return true;
+      final fresh = Invite.fromJson(json);
+      final current = _invite?.activity;
       setState(() {
-        _invite = Invite.fromJson(json);
+        _invite = current != null && current.version > fresh.activity.version ? fresh.copyWith(activity: current) : fresh;
         _offline = false;
         _loadError = null;
       });
@@ -62,32 +86,16 @@ class _InviteScreenState extends State<InviteScreen> {
         _tracked = true;
         widget.api.trackOpened(widget.code, widget.store.deviceId);
       }
-      _listen();
+      return true;
     } on ApiException catch (error) {
-      if (!mounted) return;
-      setState(() {
-        _offline = error.isOffline && _invite != null;
-        _loadError = _offline ? null : error;
-      });
-      if (error.isOffline) _scheduleReconnect();
+      if (mounted) {
+        setState(() {
+          _offline = error.isOffline && _invite != null;
+          _loadError = _offline ? null : error;
+        });
+      }
+      return false;
     }
-  }
-
-  void _listen() {
-    _live?.cancel();
-    _live = widget.api.availability(_invite!.activity.id).listen(
-      (event) => setState(() => _invite = _invite!.copyWith(activity: _invite!.activity.apply(event))),
-      onError: (_) => _scheduleReconnect(),
-      onDone: _scheduleReconnect,
-      cancelOnError: true,
-    );
-  }
-
-  void _scheduleReconnect() {
-    _reconnect?.cancel();
-    _reconnect = Timer(const Duration(seconds: 3), () {
-      if (mounted) _load();
-    });
   }
 
   Future<void> _claim() async {
@@ -100,11 +108,10 @@ class _InviteScreenState extends State<InviteScreen> {
     });
     try {
       await widget.api.claim(widget.code, widget.store.deviceId, name);
-      widget.store
-        ..name = name
-        ..markClaimed(widget.code);
+      widget.store.name = name;
       HapticFeedback.mediumImpact();
-      _claimed = true;
+      _invite = _invite!.copyWith(joined: true);
+      _load();
     } on ApiException catch (error) {
       HapticFeedback.heavyImpact();
       _claimError = error;
@@ -123,7 +130,7 @@ class _InviteScreenState extends State<InviteScreen> {
         child: invite == null
             ? _loadError == null
                   ? const _Loading()
-                  : _LoadFailed(error: _loadError!, onRetry: _load)
+                  : _LoadFailed(error: _loadError!, onRetry: _connect)
             : RefreshIndicator(
                 onRefresh: _load,
                 child: ListView(
@@ -144,7 +151,7 @@ class _InviteScreenState extends State<InviteScreen> {
 
   Widget _claimPanel(Invite invite) {
     final activity = invite.activity;
-    if (_claimed) {
+    if (invite.joined) {
       return _Notice(
         color: lagoon,
         icon: Icons.check_circle,

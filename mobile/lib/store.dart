@@ -33,9 +33,6 @@ class Store {
   }
 
   List<String> get recentCodes => _prefs.getStringList('recentCodes') ?? [];
-
-  bool claimed(String code) => _prefs.getBool('claimed:$code') ?? false;
-  void markClaimed(String code) => _prefs.setBool('claimed:$code', true);
 }
 
 String _uuid() {
