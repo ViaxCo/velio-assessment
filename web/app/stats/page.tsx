@@ -42,7 +42,7 @@ export default function StatsPage() {
       <Section title="Product goals">
         <Row
           label="Bookers who invite"
-          hint={`${goals.bookersWhoInvite.followedByInvite} of ${goals.bookersWhoInvite.bookings} bookings · target ${goals.bookersWhoInvite.targetPct}%`}
+          hint={`${goals.bookersWhoInvite.inviters} of ${goals.bookersWhoInvite.bookers} bookers · target ${goals.bookersWhoInvite.targetPct}%`}
           status={goals.bookersWhoInvite.pct === null ? null : goals.bookersWhoInvite.pct >= goals.bookersWhoInvite.targetPct}
         >
           {pct(goals.bookersWhoInvite.pct)}
@@ -105,8 +105,7 @@ function Row({ label, hint, status, children }: { label: string; hint: string; s
 }
 
 function FunnelTable({ funnel }: { funnel: Stats["funnel"] }) {
-  const count = (step: string, rail?: string) =>
-    funnel.filter((row) => row.step === step && (rail === undefined || row.rail === rail)).reduce((sum, row) => sum + row.actors, 0);
+  const count = (step: string, rail = "all") => funnel.find((row) => row.step === step && row.rail === rail)?.actors ?? 0;
 
   return (
     <div className="overflow-x-auto">

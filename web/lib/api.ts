@@ -100,7 +100,7 @@ export const api = {
 export type Stats = {
   slos: { goal: string; target: string; actual: number | null; met: boolean | null }[];
   goals: {
-    bookersWhoInvite: { bookings: number; followedByInvite: number; pct: number | null; targetPct: number };
+    bookersWhoInvite: { bookers: number; inviters: number; pct: number | null; targetPct: number };
     inviteConversion: {
       rail: string;
       opens: number;
@@ -112,6 +112,6 @@ export type Stats = {
     }[];
     kFactor: { rail: string; newUsers: number; existingUsers: number; kFactor: number | null }[];
   };
-  funnel: { step: string; rail: Rail | null; events: number; actors: number }[];
+  funnel: { step: string; rail: Rail | "all"; events: number; actors: number }[];
   holdout: { inviteGroup: string; users: number; plansHappened: number; plansHappenedPerUser: number | null }[];
 };

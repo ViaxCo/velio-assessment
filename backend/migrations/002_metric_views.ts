@@ -10,24 +10,23 @@ export async function up(knex: Knex) {
     HAVING count(b.id) > a.capacity OR count(b.id) <> a.spots_taken;
 
     CREATE VIEW metric_funnel AS
-    SELECT name AS step, rail, count(*) AS events, count(DISTINCT actor_id) AS actors
+    SELECT name AS step,
+           CASE WHEN grouping(rail) = 1 THEN 'all' ELSE rail END AS rail,
+           count(*) AS events,
+           count(DISTINCT actor_id) AS actors
     FROM events
-    GROUP BY name, rail;
+    GROUP BY GROUPING SETS ((name), (name, rail))
+    HAVING grouping(rail) = 1 OR rail IS NOT NULL;
 
     CREATE VIEW goal_bookers_who_invite AS
-    SELECT count(*) AS bookings,
-           count(*) FILTER (WHERE invited) AS followed_by_invite,
-           round(100.0 * count(*) FILTER (WHERE invited) / nullif(count(*), 0), 1) AS pct,
+    SELECT count(DISTINCT b.user_id) AS bookers,
+           count(DISTINCT i.inviter_id) AS inviters,
+           round(100.0 * count(DISTINCT i.inviter_id) / nullif(count(DISTINCT b.user_id), 0), 1) AS pct,
            30 AS target_pct
-    FROM (
-      SELECT EXISTS (
-        SELECT 1 FROM invites i
-        WHERE i.inviter_id = b.user_id AND i.activity_id = b.activity_id
-      ) AS invited
-      FROM bookings b
-      JOIN users u ON u.id = b.user_id
-      WHERE u.invite_group = 'treatment'
-    ) s;
+    FROM bookings b
+    JOIN users u ON u.id = b.user_id
+    LEFT JOIN invites i ON i.inviter_id = b.user_id AND i.activity_id = b.activity_id
+    WHERE u.invite_group = 'treatment';
 
     CREATE VIEW goal_invite_conversion AS
     WITH opens AS (
