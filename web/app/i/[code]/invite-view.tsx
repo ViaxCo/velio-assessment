@@ -31,8 +31,7 @@ export function InviteView({ code }: { code: string }) {
 }
 
 function Invite({ invite }: { invite: InviteDetail }) {
-  const { userId, user } = useIdentity();
-  const queryClient = useQueryClient();
+  const { userId } = useIdentity();
   const { activity } = invite;
   useLiveAvailability(activity.id);
 
@@ -42,12 +41,6 @@ function Invite({ invite }: { invite: InviteDetail }) {
     tracked.current = true;
     api.track({ name: "invite_opened", code: invite.code, actorId: userId });
   }, [invite.code, userId]);
-
-  const claim = useMutation({
-    mutationFn: (name: string) => api.claim(invite.code, userId!, name),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["user", userId] }),
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ["invite", invite.code] }),
-  });
 
   const headline =
     invite.rail === "vouch"
@@ -69,25 +62,21 @@ function Invite({ invite }: { invite: InviteDetail }) {
       </Card>
 
       <Card className="space-y-3">
-        <ClaimState invite={invite} claim={claim} hasName={Boolean(user)} onClaim={(name) => claim.mutateAsync(name)} />
+        <ClaimState invite={invite} />
       </Card>
     </div>
   );
 }
 
-function ClaimState({
-  invite,
-  claim,
-  hasName,
-  onClaim,
-}: {
-  invite: InviteDetail;
-  claim: { isSuccess: boolean; isPending: boolean; error: Error | null };
-  hasName: boolean;
-  onClaim: (name: string) => Promise<unknown>;
-}) {
-  const { user } = useIdentity();
+function ClaimState({ invite }: { invite: InviteDetail }) {
+  const { userId, user } = useIdentity();
+  const queryClient = useQueryClient();
   const { activity } = invite;
+  const claim = useMutation({
+    mutationFn: (name: string) => api.claim(invite.code, userId!, name),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["user", userId] }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["invite", invite.code] }),
+  });
 
   if (claim.isSuccess) {
     return (
@@ -117,12 +106,12 @@ function ClaimState({
   return (
     <>
       {claim.error && <Notice tone="error" title="We couldn't claim your spot">{claim.error.message}</Notice>}
-      {hasName ? (
-        <Button onClick={() => onClaim(user!.name)} disabled={claim.isPending} className="w-full">
-          {claim.isPending ? "Claiming…" : `Claim my spot as ${user!.name}`}
+      {user ? (
+        <Button onClick={() => claim.mutate(user.name)} disabled={claim.isPending} className="w-full">
+          {claim.isPending ? "Claiming…" : `Claim my spot as ${user.name}`}
         </Button>
       ) : (
-        <NameForm cta={claim.isPending ? "Claiming…" : "Claim my spot"} onSubmit={onClaim} />
+        <NameForm cta={claim.isPending ? "Claiming…" : "Claim my spot"} onSubmit={claim.mutateAsync} />
       )}
     </>
   );
