@@ -32,6 +32,7 @@ export function useLiveAvailability(activityId?: string) {
         invite?.activity.id === event.activityId ? { ...invite, activity: applyEvent(invite.activity, event) } : invite,
       );
       queryClient.invalidateQueries({ queryKey: ["activity", event.activityId] });
+      queryClient.invalidateQueries({ queryKey: ["invite"] });
     };
 
     return () => source.close();
