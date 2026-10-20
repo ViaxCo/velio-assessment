@@ -8,13 +8,15 @@ import { Button, inputClass, Notice } from "./ui";
 
 export function InvitePanel({ activityId, title }: { activityId: string; title: string }) {
   const { user } = useIdentity();
-  const [invites, setInvites] = useState<Invite[]>([]);
+  const [vouches, setVouches] = useState<Invite[]>([]);
+  const [publicInvite, setPublicInvite] = useState<Invite>();
   const [recipient, setRecipient] = useState("");
 
   const create = useMutation({
     mutationFn: (body: { rail: Rail; recipient?: string }) => api.createInvite(user!.id, activityId, body),
     onSuccess: (invite) => {
-      setInvites((current) => [invite, ...current]);
+      if (invite.rail === "public") return setPublicInvite(invite);
+      setVouches((current) => [invite, ...current]);
       setRecipient("");
     },
   });
@@ -55,57 +57,66 @@ export function InvitePanel({ activityId, title }: { activityId: string; title: 
         </div>
       </form>
 
-      <div className="flex items-center justify-between gap-3 border-t border-white/15 pt-4">
-        <div>
-          <p className="font-bold">Share a public link</p>
-          <p className="text-sm text-white/75">Anyone with the link can join. Good for group chats.</p>
+      {vouches.map((invite) => (
+        <div key={invite.code} className="animate-rise space-y-2 rounded-2xl bg-white/10 p-3">
+          <div className="flex items-center justify-between text-sm">
+            <span className="font-bold">Vouch for {invite.recipient}</span>
+            <span className="font-mono text-xs tracking-widest text-lime">{invite.code}</span>
+          </div>
+          <InviteLink invite={invite} title={title} />
         </div>
-        <Button
-          onClick={() => create.mutate({ rail: "public" })}
-          disabled={create.isPending}
-          className="shrink-0 !bg-white px-5 enabled:hover:!bg-lime"
-        >
-          Get link
-        </Button>
+      ))}
+
+      <div className="space-y-3 border-t border-white/15 pt-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="font-bold">Share a public link</p>
+            <p className="text-sm text-white/75">Anyone with the link can join. Good for group chats.</p>
+          </div>
+          {!publicInvite && (
+            <Button
+              onClick={() => create.mutate({ rail: "public" })}
+              disabled={create.isPending}
+              className="shrink-0 !bg-white px-5 enabled:hover:!bg-lime"
+            >
+              Get link
+            </Button>
+          )}
+        </div>
+        {publicInvite && (
+          <div className="animate-rise">
+            <InviteLink invite={publicInvite} title={title} />
+          </div>
+        )}
       </div>
 
       {create.error && <Notice tone="error" title="We couldn't create that invite">{create.error.message}</Notice>}
-
-      {invites.map((invite) => (
-        <InviteLink key={invite.code} invite={invite} title={title} />
-      ))}
     </section>
   );
 }
 
 function InviteLink({ invite, title }: { invite: Invite; title: string }) {
   const [copied, setCopied] = useState(false);
-  const label = invite.rail === "vouch" ? `Vouch for ${invite.recipient}` : "Public link";
-  const text = `Join me at ${title} on Velio`;
+  const canShare = "share" in navigator && matchMedia("(pointer: coarse)").matches;
 
   return (
-    <div className="animate-rise rounded-2xl bg-white/10 p-3">
-      <div className="flex items-center justify-between text-sm">
-        <span className="font-bold">{label}</span>
-        <span className="font-mono text-xs tracking-widest text-lime">{invite.code}</span>
-      </div>
-      <div className="mt-2 flex gap-2">
-        <input readOnly value={invite.url} className={`${inputClass} py-2 text-sm`} onFocus={(event) => event.target.select()} />
-        <Button
-          small
-          className="shrink-0"
-          onClick={async () => {
-            if (navigator.share) {
-              await navigator.share({ title, text, url: invite.url }).catch(() => undefined);
-              return;
-            }
-            await navigator.clipboard?.writeText(invite.url);
-            setCopied(true);
-          }}
-        >
-          {copied ? "Copied" : "Share"}
-        </Button>
-      </div>
+    <div className="flex gap-2">
+      <input readOnly value={invite.url} className={`${inputClass} py-2 text-sm`} onFocus={(event) => event.target.select()} />
+      <Button
+        small
+        className="w-20 shrink-0"
+        onClick={async () => {
+          if (canShare) {
+            await navigator.share({ title, text: `Join me at ${title} on Velio`, url: invite.url }).catch(() => undefined);
+            return;
+          }
+          await navigator.clipboard.writeText(invite.url);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        }}
+      >
+        {canShare ? "Share" : copied ? "Copied" : "Copy"}
+      </Button>
     </div>
   );
 }
