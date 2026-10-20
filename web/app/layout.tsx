@@ -16,7 +16,10 @@ export const viewport: Viewport = { themeColor: "#f5f3ec" };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${satoshi.variable} ${nohemi.variable} h-full antialiased`}>
+    <html lang="en" className={`${satoshi.variable} ${nohemi.variable} h-full antialiased`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `if (localStorage.getItem("velio.user")) document.documentElement.dataset.named = ""` }} />
+      </head>
       <body className="min-h-full font-sans">
         <Providers>
           <Header />

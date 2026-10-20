@@ -82,12 +82,12 @@ function Invite({ invite }: { invite: InviteDetail }) {
 }
 
 function ClaimState({ invite }: { invite: InviteDetail }) {
-  const { userId, user } = useIdentity();
+  const { userId, user, refreshUser } = useIdentity();
   const queryClient = useQueryClient();
   const { activity } = invite;
   const claim = useMutation({
     mutationFn: (name: string) => api.claim(invite.code, userId!, name),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["user", userId] }),
+    onSuccess: refreshUser,
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["invite", invite.code] }),
   });
 

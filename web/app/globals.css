@@ -44,6 +44,8 @@
   }
 }
 
+@custom-variant named (&:where([data-named] *));
+
 @utility stagger {
   & > * {
     animation: var(--animate-rise);

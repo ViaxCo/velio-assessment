@@ -46,21 +46,22 @@ export function NameForm({ cta, onSubmit }: { cta: string; onSubmit: (name: stri
 }
 
 export function NameGate({ children }: { children: ReactNode }) {
-  const { userId, user, isLoading, saveName } = useIdentity();
+  const { userId, user, saveName } = useIdentity();
 
-  if (!userId) return null;
-  if (isLoading) return <Skeleton className="h-48" />;
   if (user) return children;
 
   return (
-    <div className="stagger mx-auto max-w-md space-y-8">
-      <div>
-        <h1 className="text-[40px] md:text-5xl">Do more things, with more people.</h1>
-        <p className="mt-4 text-xl/[30px] font-medium text-ink/80">Tell us your name so your friends know who’s coming.</p>
+    <>
+      {!userId && <Skeleton className="hidden h-48 named:block" />}
+      <div className={`stagger mx-auto max-w-md space-y-8 ${userId ? "" : "named:hidden"}`}>
+        <div>
+          <h1 className="text-[40px] md:text-5xl">Do more things, with more people.</h1>
+          <p className="mt-4 text-xl/[30px] font-medium text-ink/80">Tell us your name so your friends know who’s coming.</p>
+        </div>
+        <Card>
+          <NameForm cta="Continue" onSubmit={saveName} />
+        </Card>
       </div>
-      <Card>
-        <NameForm cta="Continue" onSubmit={saveName} />
-      </Card>
-    </div>
+    </>
   );
 }
