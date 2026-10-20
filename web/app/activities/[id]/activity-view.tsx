@@ -7,7 +7,7 @@ import { Attendees } from "@/components/attendees";
 import { InvitePanel } from "@/components/invite-panel";
 import { NameGate } from "@/components/name-gate";
 import { BackLink, Button, Card, Detail, Notice, Skeleton, SpotsBadge } from "@/components/ui";
-import { api, ApiError, type ActivityDetail } from "@/lib/api";
+import { activityQuery, api, ApiError, type Activity as ActivitySummary, type ActivityDetail } from "@/lib/api";
 import { formatDate, formatPrice } from "@/lib/format";
 import { useIdentity } from "@/lib/identity";
 import { useLiveAvailability } from "@/lib/live";
@@ -23,8 +23,14 @@ export function ActivityView({ id }: { id: string }) {
 function Activity({ id }: { id: string }) {
   const { user } = useIdentity();
   const queryClient = useQueryClient();
-  const queryKey = ["activity", id];
-  const activity = useQuery({ queryKey, queryFn: () => api.getActivity(id) });
+  const { queryKey } = activityQuery(id);
+  const activity = useQuery({
+    ...activityQuery(id),
+    placeholderData: () => {
+      const summary = queryClient.getQueryData<ActivitySummary[]>(["activities"])?.find((item) => item.id === id);
+      return summary && { ...summary, attendees: [] };
+    },
+  });
   useLiveAvailability(id);
 
   const tracked = useRef(false);
@@ -94,48 +100,54 @@ function Activity({ id }: { id: string }) {
         {data.description && <p className="leading-relaxed text-ink/80">{data.description}</p>}
       </Card>
 
-      {!isHost && !myBooking && (
-        <Card className="space-y-3">
-          {book.isError && <BookingError error={book.error} />}
-          {started ? (
-            <Notice tone="info" title="This activity has already started" />
-          ) : data.spotsLeft === 0 ? (
-            !book.isError && (
-              <Notice tone="info" title="This one is full">
-                <Link href="/" className="font-medium text-ink underline transition-opacity duration-300 hover:opacity-60">
-                  See what else is on
-                </Link>
-              </Notice>
-            )
-          ) : (
-            <Button arrow onClick={() => book.mutate()} pending={book.isPending}>
-              Book a spot · {formatPrice(data.priceMinor, data.currency)}
-            </Button>
+      {activity.isPlaceholderData ? (
+        <Skeleton className="h-36" />
+      ) : (
+        <>
+          {!isHost && !myBooking && (
+            <Card className="space-y-3">
+              {book.isError && <BookingError error={book.error} />}
+              {started ? (
+                <Notice tone="info" title="This activity has already started" />
+              ) : data.spotsLeft === 0 ? (
+                !book.isError && (
+                  <Notice tone="info" title="This one is full">
+                    <Link href="/" className="font-medium text-ink underline transition-opacity duration-300 hover:opacity-60">
+                      See what else is on
+                    </Link>
+                  </Notice>
+                )
+              ) : (
+                <Button arrow onClick={() => book.mutate()} pending={book.isPending}>
+                  Book a spot · {formatPrice(data.priceMinor, data.currency)}
+                </Button>
+              )}
+              <p className="text-xs text-muted">You won’t be charged in this prototype.</p>
+            </Card>
           )}
-          <p className="text-xs text-muted">You won’t be charged in this prototype.</p>
-        </Card>
-      )}
 
-      {myBooking && (
-        <Notice tone="success" title={myBooking.planId === "pending" ? "Booking your spot…" : "You're in!"}>
-          {myBooking.planId === "pending" ? "Hold tight." : "Invite friends below. They'll join your plan."}
-        </Notice>
-      )}
+          {myBooking && (
+            <Notice tone="success" title={myBooking.planId === "pending" ? "Booking your spot…" : "You're in!"}>
+              {myBooking.planId === "pending" ? "Hold tight." : "Invite friends below. They'll join your plan."}
+            </Notice>
+          )}
 
-      {(isHost || (myBooking && myBooking.planId !== "pending")) && !started && (
-        <InvitePanel activityId={data.id} title={data.title} />
-      )}
+          {(isHost || (myBooking && myBooking.planId !== "pending")) && !started && (
+            <InvitePanel activityId={data.id} title={data.title} />
+          )}
 
-      {(isHost || myBooking) && (
-        <Card className="space-y-3">
-          <div className="flex items-baseline justify-between">
-            <h2 className="text-xl">Who’s going</h2>
-            <span className="text-sm text-muted">
-              {data.spotsTaken} of {data.capacity}
-            </span>
-          </div>
-          <Attendees attendees={data.attendees} highlightPlanId={myBooking?.planId} />
-        </Card>
+          {(isHost || myBooking) && (
+            <Card className="space-y-3">
+              <div className="flex items-baseline justify-between">
+                <h2 className="text-xl">Who’s going</h2>
+                <span className="text-sm text-muted">
+                  {data.spotsTaken} of {data.capacity}
+                </span>
+              </div>
+              <Attendees attendees={data.attendees} highlightPlanId={myBooking?.planId} />
+            </Card>
+          )}
+        </>
       )}
     </div>
   );

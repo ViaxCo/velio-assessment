@@ -52,6 +52,11 @@ export type InviteDetail = Invite & {
 
 export type Booking = { id: string; activityId: string; planId: string; userId: string };
 
+export const activityQuery = (id: string) => ({
+  queryKey: ["activity", id],
+  queryFn: () => api.getActivity(id),
+});
+
 export class ApiError extends Error {
   constructor(
     readonly status: number,

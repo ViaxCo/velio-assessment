@@ -1,14 +1,19 @@
+"use client";
+
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import type { Activity } from "@/lib/api";
+import { activityQuery, type Activity } from "@/lib/api";
 import { formatDate, formatPrice } from "@/lib/format";
 import { SpotsBadge } from "./ui";
 
 export function ActivityCard({ activity, showAttendance }: { activity: Activity; showAttendance?: boolean }) {
+  const queryClient = useQueryClient();
   const filled = (activity.spotsTaken / activity.capacity) * 100;
 
   return (
     <Link
       href={`/activities/${activity.id}`}
+      onPointerEnter={() => queryClient.prefetchQuery(activityQuery(activity.id))}
       className="block rounded-[32px] bg-card p-6 ring-1 ring-transparent transition-all duration-300 ease-soft hover:scale-[1.02] hover:shadow-xs hover:ring-ink/10 active:scale-[0.98] md:p-8"
     >
       <div className="flex items-start justify-between gap-3">
