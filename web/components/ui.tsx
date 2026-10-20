@@ -5,21 +5,29 @@ import type { Activity } from "@/lib/api";
 export function Button({
   arrow,
   small,
+  pending,
+  disabled,
   className = "",
   children,
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & { arrow?: boolean; small?: boolean }) {
+}: ButtonHTMLAttributes<HTMLButtonElement> & { arrow?: boolean; small?: boolean; pending?: boolean }) {
   const shape = arrow ? "justify-between py-1.5 pl-5 pr-1.5" : small ? "justify-center px-4" : "justify-center px-5";
   return (
     <button
-      className={`group inline-flex items-center gap-3 rounded-full bg-lime font-medium text-ink transition-all duration-300 enabled:hover:bg-lime-hover enabled:active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 ${small ? "min-h-10 text-sm" : "min-h-12 text-[15px]"} ${shape} ${className}`}
+      disabled={disabled || pending}
+      aria-busy={pending}
+      className={`group inline-flex items-center gap-3 rounded-full bg-lime font-medium text-ink transition-all duration-300 enabled:hover:bg-lime-hover enabled:active:scale-95 ${pending ? "cursor-wait" : "disabled:cursor-not-allowed disabled:opacity-40"} ${small ? "min-h-10 text-sm" : "min-h-12 text-[15px]"} ${shape} ${className}`}
       {...props}
     >
       {children}
       {arrow && (
         <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white transition-transform duration-300 group-hover:rotate-45">
-          <svg viewBox="0 0 24 24" aria-hidden className="size-4 fill-none stroke-current stroke-2 [stroke-linecap:round] [stroke-linejoin:round]">
-            <path d="M7 7h10v10M7 17 17 7" />
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden
+            className={`size-4 fill-none stroke-current stroke-2 [stroke-linecap:round] [stroke-linejoin:round] ${pending ? "animate-spin" : ""}`}
+          >
+            <path d={pending ? "M21 12a9 9 0 1 1-6.2-8.6" : "M7 7h10v10M7 17 17 7"} />
           </svg>
         </span>
       )}

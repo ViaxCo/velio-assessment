@@ -108,7 +108,7 @@ function Activity({ id }: { id: string }) {
               </Notice>
             )
           ) : (
-            <Button arrow onClick={() => book.mutate()} disabled={book.isPending}>
+            <Button arrow onClick={() => book.mutate()} pending={book.isPending}>
               Book a spot · {formatPrice(data.priceMinor, data.currency)}
             </Button>
           )}

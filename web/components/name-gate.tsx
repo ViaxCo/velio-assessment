@@ -38,8 +38,8 @@ export function NameForm({ cta, onSubmit }: { cta: string; onSubmit: (name: stri
         required
       />
       {error && <Notice tone="error" title={error} />}
-      <Button arrow type="submit" disabled={saving || !name.trim()}>
-        {saving ? "One moment…" : cta}
+      <Button arrow type="submit" disabled={!name.trim()} pending={saving}>
+        {cta}
       </Button>
     </form>
   );

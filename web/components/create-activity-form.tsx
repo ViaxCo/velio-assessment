@@ -67,8 +67,8 @@ export function CreateActivityForm() {
           <Button type="button" onClick={() => setOpen(false)} className="!bg-transparent ring-1 ring-ink/15 enabled:hover:!bg-ink/5">
             Cancel
           </Button>
-          <Button type="submit" disabled={create.isPending}>
-            {create.isPending ? "Creating…" : "Create"}
+          <Button arrow type="submit" pending={create.isPending}>
+            Create
           </Button>
         </div>
       </form>

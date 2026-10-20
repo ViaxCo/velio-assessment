@@ -120,11 +120,11 @@ function ClaimState({ invite }: { invite: InviteDetail }) {
     <>
       {claim.error && <Notice tone="error" title="We couldn't claim your spot">{claim.error.message}</Notice>}
       {user ? (
-        <Button arrow onClick={() => claim.mutate(user.name)} disabled={claim.isPending}>
-          {claim.isPending ? "Claiming…" : `Claim my spot as ${user.name}`}
+        <Button arrow onClick={() => claim.mutate(user.name)} pending={claim.isPending}>
+          Claim my spot as {user.name}
         </Button>
       ) : (
-        <NameForm cta={claim.isPending ? "Claiming…" : "Claim my spot"} onSubmit={claim.mutateAsync} />
+        <NameForm cta="Claim my spot" onSubmit={claim.mutateAsync} />
       )}
     </>
   );
