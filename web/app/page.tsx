@@ -26,7 +26,7 @@ function Activities() {
   const shown = isHost ? activities.data?.filter((activity) => activity.hostId === userId) : activities.data;
 
   return (
-    <div className="stagger space-y-4">
+    <div key={role} className="stagger space-y-4">
       <h1 className="pb-2 text-4xl md:text-[44px]">{isHost ? "Your activities" : "Happening soon"}</h1>
       {isHost && <CreateActivityForm />}
       {activities.isPending && [1, 2, 3].map((key) => <Skeleton key={key} className="h-24" />)}
