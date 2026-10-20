@@ -37,10 +37,11 @@ function useIdentityState() {
       return found;
     },
     enabled: Boolean(userId && savedUser),
-    placeholderData: () => {
+    initialData: () => {
       const saved: User | null = savedUser && JSON.parse(savedUser);
       return saved?.id === userId ? saved : undefined;
     },
+    initialDataUpdatedAt: 0,
   });
 
   return {
