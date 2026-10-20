@@ -52,11 +52,14 @@ Identity is a UUID made on the device and kept in local storage. The avatar menu
 ## Architecture and decisions
 
 ```
- web / mobile ──HTTP──▶ API instance ──SQL──▶ Postgres (source of truth)
-      ▲                     │
-      └──────── SSE ────────┤ publish after commit
+web / mobile ──HTTP──▶ API instance ──SQL──▶ Postgres (source of truth)
+                            │
+                            │ publish after commit
                             ▼
-                     Redis pub/sub ──▶ every API instance ──▶ its open SSE streams
+                      Redis pub/sub
+                            │
+                            ▼
+                   every API instance ──SSE──▶ web / mobile
 ```
 
 ### Data model
