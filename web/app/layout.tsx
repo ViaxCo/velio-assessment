@@ -20,7 +20,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full font-sans">
         <Providers>
           <Header />
-          <main className="mx-auto w-full max-w-3xl px-4 pb-16 pt-6">{children}</main>
+          <main className="mx-auto w-full max-w-3xl px-6 pb-16 pt-28 md:pt-32">{children}</main>
         </Providers>
       </body>
     </html>
