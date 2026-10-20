@@ -259,21 +259,27 @@ class _SpotsPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = spotsLeft == 0 ? muted : spotsLeft <= 3 ? alert : lime;
+    final (background, color) = spotsLeft == 0
+        ? (ink.withValues(alpha: 0.1), muted)
+        : spotsLeft <= 3
+        ? (alertSoft, alert)
+        : (limeSoft, ink);
     final label = spotsLeft == 0 ? 'Full' : spotsLeft == 1 ? 'Last spot' : '$spotsLeft spots left';
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 250),
       transitionBuilder: (child, animation) => ScaleTransition(scale: animation, child: child),
       child: Container(
         key: ValueKey(label),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(99)),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(99)),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
-            const SizedBox(width: 8),
-            Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+            if (spotsLeft > 0) ...[
+              _Pulse(child: Container(width: 6, height: 6, decoration: BoxDecoration(color: color, shape: BoxShape.circle))),
+              const SizedBox(width: 6),
+            ],
+            Text(label, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w700)),
           ],
         ),
       ),
@@ -370,22 +376,31 @@ class _OfflineBanner extends StatelessWidget {
   }
 }
 
-class _Loading extends StatefulWidget {
-  const _Loading();
+class _Pulse extends StatefulWidget {
+  const _Pulse({required this.child});
+
+  final Widget child;
 
   @override
-  State<_Loading> createState() => _LoadingState();
+  State<_Pulse> createState() => _PulseState();
 }
 
-class _LoadingState extends State<_Loading> with SingleTickerProviderStateMixin {
-  late final _pulse = AnimationController(vsync: this, duration: const Duration(seconds: 1), lowerBound: 0.5)
+class _PulseState extends State<_Pulse> with SingleTickerProviderStateMixin {
+  late final _opacity = AnimationController(vsync: this, duration: const Duration(seconds: 1), lowerBound: 0.5)
     ..repeat(reverse: true);
 
   @override
   void dispose() {
-    _pulse.dispose();
+    _opacity.dispose();
     super.dispose();
   }
+
+  @override
+  Widget build(BuildContext context) => FadeTransition(opacity: _opacity, child: widget.child);
+}
+
+class _Loading extends StatelessWidget {
+  const _Loading();
 
   @override
   Widget build(BuildContext context) {
@@ -394,8 +409,7 @@ class _LoadingState extends State<_Loading> with SingleTickerProviderStateMixin 
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(color: haze, borderRadius: BorderRadius.circular(32)),
     );
-    return FadeTransition(
-      opacity: _pulse,
+    return _Pulse(
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(children: [block(32), block(140), block(52)]),
