@@ -54,6 +54,19 @@ describe("invites and attribution", () => {
     expect(plan.map((member) => member.userId).sort()).toEqual([booker, guest, secondGuest].sort());
   });
 
+  it("gives each person one public link per activity", async () => {
+    const host = await servers.createUser("Host");
+    const activityId = await servers.createActivity(host, 10);
+
+    const first = await invite(activityId, host, { rail: "public" });
+    const second = await invite(activityId, host, { rail: "public" });
+    const vouch = await invite(activityId, host, { rail: "vouch", recipient: "Ada" });
+
+    expect(second.code).toBe(first.code);
+    expect(vouch.code).not.toBe(first.code);
+    expect(await servers.db("events").where({ name: "invite_created", activity_id: activityId, rail: "public" })).toHaveLength(1);
+  });
+
   it("lets a vouch invite be claimed only once, even when claims race", async () => {
     const host = await servers.createUser("Host");
     const activityId = await servers.createActivity(host, 20);

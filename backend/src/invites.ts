@@ -24,6 +24,13 @@ export async function createInvite(
     throw new AppError(403, "not_in_activity", "Book a spot first, then invite your friends.");
   }
 
+  const withUrl = <T extends { code: string }>(invite: T) => ({ ...invite, url: `${config.webUrl}/i/${invite.code}` });
+
+  if (rail === "public") {
+    const existing = await db("invites").where({ inviter_id: user.id, activity_id: activityId, rail }).first();
+    if (existing) return withUrl(existing);
+  }
+
   return db.transaction(async (trx) => {
     const [invite] = await trx("invites")
       .insert({
@@ -42,7 +49,7 @@ export async function createInvite(
       invite_id: invite.id,
       rail,
     });
-    return { ...invite, url: `${config.webUrl}/i/${invite.code}` };
+    return withUrl(invite);
   });
 }
 
