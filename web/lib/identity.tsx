@@ -7,20 +7,32 @@ import { newId, useLocalStorage } from "./local-storage";
 
 export type Role = "booker" | "host";
 
+const fetchUser = (id: string) =>
+  api.getUser(id).catch((error) => {
+    if (error instanceof ApiError && error.status === 404) return null;
+    throw error;
+  });
+
 function useIdentityState() {
   const queryClient = useQueryClient();
   const [userId, setUserId] = useLocalStorage("velio.userId", newId);
   const [role, setRole] = useLocalStorage("velio.role", () => "booker");
   const [savedUser, setSavedUser] = useLocalStorage("velio.user");
-  const remember = (next: User | null) => setSavedUser(next && JSON.stringify(next));
+  const [savedPeople, setSavedPeople] = useLocalStorage("velio.people");
+  const people: Pick<User, "id" | "name">[] = savedPeople ? JSON.parse(savedPeople) : [];
+
+  const remember = (next: User | null) => {
+    setSavedUser(next && JSON.stringify(next));
+    if (!next) return;
+    const person = { id: next.id, name: next.name };
+    const known = people.some(({ id }) => id === next.id);
+    setSavedPeople(JSON.stringify(known ? people.map((other) => (other.id === next.id ? person : other)) : [...people, person]));
+  };
 
   const user = useQuery({
     queryKey: ["user", userId],
     queryFn: async () => {
-      const found = await api.getUser(userId!).catch((error) => {
-        if (error instanceof ApiError && error.status === 404) return null;
-        throw error;
-      });
+      const found = await fetchUser(userId!);
       remember(found);
       return found;
     },
@@ -42,7 +54,14 @@ function useIdentityState() {
       queryClient.setQueryData(["user", userId], saved);
       remember(saved);
     },
-    switchPerson: () => {
+    people,
+    async switchPerson(id: string) {
+      const found = await fetchUser(id);
+      queryClient.setQueryData(["user", id], found);
+      remember(found);
+      setUserId(id);
+    },
+    newPerson: () => {
       remember(null);
       setRole("booker");
       setUserId(newId());

@@ -14,7 +14,7 @@ const roles: { value: Role; label: string }[] = [
 ];
 
 export function Header() {
-  const { user, role, setRole, switchPerson } = useIdentity();
+  const { user, role, setRole, people, switchPerson, newPerson } = useIdentity();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -105,17 +105,42 @@ export function Header() {
                 >
                   Tracking
                 </Link>
-                <button
-                  role="menuitem"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    switchPerson();
-                    goHome();
-                  }}
-                  className="w-full rounded-2xl px-3 py-2 text-left transition-colors duration-200 hover:bg-canvas"
-                >
-                  Switch person
-                </button>
+                <div className="mt-1 border-t border-line pt-1">
+                  <p className="px-3 py-2 text-xs text-muted">Switch person</p>
+                  <div className="max-h-48 overflow-y-auto">
+                    {people.map((person) => {
+                      const current = person.id === user.id;
+                      return (
+                        <button
+                          key={person.id}
+                          role="menuitemradio"
+                          aria-checked={current}
+                          disabled={current}
+                          onClick={() => {
+                            setMenuOpen(false);
+                            switchPerson(person.id);
+                            goHome();
+                          }}
+                          className="flex w-full items-center justify-between rounded-2xl px-3 py-2 text-left transition-colors duration-200 enabled:hover:bg-canvas"
+                        >
+                          {person.name}
+                          {current && <span className="text-xs text-muted">Current</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <button
+                    role="menuitem"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      newPerson();
+                      goHome();
+                    }}
+                    className="w-full rounded-2xl px-3 py-2 text-left transition-colors duration-200 hover:bg-canvas"
+                  >
+                    New person
+                  </button>
+                </div>
               </div>
             </div>
           </div>
