@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import type { Activity } from "@/lib/api";
 
@@ -49,7 +50,11 @@ export function SpotsBadge({ activity }: { activity: Pick<Activity, "spotsLeft" 
   const style = spotsLeft === 0 ? "bg-ink/10 text-muted" : spotsLeft <= 3 ? "bg-alert-soft text-alert" : "bg-lime-soft text-ink";
   const label = spotsLeft === 0 ? "Full" : spotsLeft === 1 ? "Last spot" : `${spotsLeft} spots left`;
   return (
-    <span aria-live="polite" className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${style}`}>
+    <span
+      key={label}
+      aria-live="polite"
+      className={`inline-flex shrink-0 animate-pop items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold transition-colors duration-300 ${style}`}
+    >
       {spotsLeft > 0 && <span className="size-1.5 animate-pulse rounded-full bg-current" />}
       {label}
     </span>
@@ -80,6 +85,22 @@ export function Detail({ icon, children }: { icon: keyof typeof icons; children:
       </svg>
       {children}
     </p>
+  );
+}
+
+export function BackLink() {
+  return (
+    <Link
+      href="/"
+      className="group inline-flex items-center gap-2 rounded-full bg-card py-1.5 pl-1.5 pr-4 text-sm font-medium shadow-xs transition-all duration-300 hover:bg-white/60 active:scale-95"
+    >
+      <span className="flex size-7 items-center justify-center rounded-full bg-canvas transition-transform duration-300 group-hover:-translate-x-0.5">
+        <svg viewBox="0 0 24 24" aria-hidden className="size-4 fill-none stroke-current stroke-2 [stroke-linecap:round] [stroke-linejoin:round]">
+          <path d="m12 19-7-7 7-7M19 12H5" />
+        </svg>
+      </span>
+      All activities
+    </Link>
   );
 }
 

@@ -8,7 +8,7 @@ export function Attendees({ attendees, highlightPlanId }: { attendees: Attendee[
   if (attendees.length === 0) return <p className="text-sm text-muted">No one has booked yet. They’ll appear here live.</p>;
 
   return (
-    <ul className="space-y-2">
+    <ul className="stagger space-y-2">
       {[...plans].map(([planId, members]) => (
         <li
           key={planId}

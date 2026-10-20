@@ -30,7 +30,7 @@ export function CreateActivityForm() {
 
   if (!open) {
     return (
-      <Button arrow onClick={() => setOpen(true)} className="w-full">
+      <Button arrow onClick={() => setOpen(true)}>
         Create an activity
       </Button>
     );
@@ -63,11 +63,11 @@ export function CreateActivityForm() {
           <input name="startsAt" type="datetime-local" className={inputClass} required />
         </label>
         {create.error && <Notice tone="error" title="We couldn't create this activity">{create.error.message}</Notice>}
-        <div className="flex gap-3">
-          <Button type="button" onClick={() => setOpen(false)} className="flex-1 !bg-transparent ring-1 ring-ink/15">
+        <div className="flex justify-end gap-3">
+          <Button type="button" onClick={() => setOpen(false)} className="!bg-transparent ring-1 ring-ink/15 enabled:hover:!bg-ink/5">
             Cancel
           </Button>
-          <Button type="submit" disabled={create.isPending} className="flex-1">
+          <Button type="submit" disabled={create.isPending}>
             {create.isPending ? "Creating…" : "Create"}
           </Button>
         </div>

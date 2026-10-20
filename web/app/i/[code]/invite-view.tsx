@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { NameForm } from "@/components/name-gate";
-import { Button, Card, Detail, Notice, Skeleton, SpotsBadge } from "@/components/ui";
+import { BackLink, Button, Card, Detail, Notice, Skeleton, SpotsBadge } from "@/components/ui";
 import { api, ApiError, type InviteDetail } from "@/lib/api";
 import { formatDate, formatPrice } from "@/lib/format";
 import { useIdentity } from "@/lib/identity";
@@ -51,9 +51,10 @@ function Invite({ invite }: { invite: InviteDetail }) {
   const vouch = invite.rail === "vouch";
 
   return (
-    <div className="mx-auto max-w-md space-y-4">
+    <div className="stagger mx-auto max-w-md space-y-4">
+      <BackLink />
       <Card className="space-y-4">
-        <h1 className="text-[32px] md:text-[40px]">{activity.title}</h1>
+        <h1 className="text-[28px] md:text-[34px]">{activity.title}</h1>
         <div className="space-y-2">
           <Detail icon="calendar">{formatDate(activity.startsAt)}</Detail>
           <Detail icon="ticket">{formatPrice(activity.priceMinor, activity.currency)}</Detail>
@@ -96,7 +97,7 @@ function ClaimState({ invite }: { invite: InviteDetail }) {
         <Notice tone="success" title="You're in the plan!">
           {invite.inviterName} will see you’ve joined.
         </Notice>
-        <Link href={`/activities/${activity.id}`} className="block text-center font-medium underline">
+        <Link href={`/activities/${activity.id}`} className="block font-medium underline transition-opacity duration-300 hover:opacity-60">
           See who’s going
         </Link>
       </>
@@ -119,7 +120,7 @@ function ClaimState({ invite }: { invite: InviteDetail }) {
     <>
       {claim.error && <Notice tone="error" title="We couldn't claim your spot">{claim.error.message}</Notice>}
       {user ? (
-        <Button arrow onClick={() => claim.mutate(user.name)} disabled={claim.isPending} className="w-full">
+        <Button arrow onClick={() => claim.mutate(user.name)} disabled={claim.isPending}>
           {claim.isPending ? "Claiming…" : `Claim my spot as ${user.name}`}
         </Button>
       ) : (

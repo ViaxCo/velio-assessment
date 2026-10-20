@@ -63,7 +63,7 @@ export function InvitePanel({ activityId, title }: { activityId: string; title: 
         <Button
           onClick={() => create.mutate({ rail: "public" })}
           disabled={create.isPending}
-          className="shrink-0 !bg-white px-5"
+          className="shrink-0 !bg-white px-5 enabled:hover:!bg-lime"
         >
           Get link
         </Button>
@@ -84,7 +84,7 @@ function InviteLink({ invite, title }: { invite: Invite; title: string }) {
   const text = `Join me at ${title} on Velio`;
 
   return (
-    <div className="rounded-2xl bg-white/10 p-3">
+    <div className="animate-rise rounded-2xl bg-white/10 p-3">
       <div className="flex items-center justify-between text-sm">
         <span className="font-bold">{label}</span>
         <span className="font-mono text-xs tracking-widest text-lime">{invite.code}</span>

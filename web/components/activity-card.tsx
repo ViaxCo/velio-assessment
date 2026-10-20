@@ -9,7 +9,7 @@ export function ActivityCard({ activity, showAttendance }: { activity: Activity;
   return (
     <Link
       href={`/activities/${activity.id}`}
-      className="block rounded-[32px] bg-card p-6 ring-1 ring-transparent transition-all duration-300 hover:ring-ink/10 active:scale-[0.99] md:p-8"
+      className="block rounded-[32px] bg-card p-6 ring-1 ring-transparent transition-all duration-300 ease-soft hover:scale-[1.02] hover:shadow-xs hover:ring-ink/10 active:scale-[0.98] md:p-8"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

@@ -6,7 +6,7 @@ import { useEffect, useRef } from "react";
 import { Attendees } from "@/components/attendees";
 import { InvitePanel } from "@/components/invite-panel";
 import { NameGate } from "@/components/name-gate";
-import { Button, Card, Detail, Notice, Skeleton, SpotsBadge } from "@/components/ui";
+import { BackLink, Button, Card, Detail, Notice, Skeleton, SpotsBadge } from "@/components/ui";
 import { api, ApiError, type ActivityDetail } from "@/lib/api";
 import { formatDate, formatPrice } from "@/lib/format";
 import { useIdentity } from "@/lib/identity";
@@ -81,9 +81,10 @@ function Activity({ id }: { id: string }) {
   const started = new Date(data.startsAt) <= new Date();
 
   return (
-    <div className="space-y-4">
+    <div className="stagger space-y-4">
+      <BackLink />
       <Card className="space-y-3">
-        <h1 className="text-[32px] md:text-[40px]">{data.title}</h1>
+        <h1 className="text-[28px] md:text-[34px]">{data.title}</h1>
         <div className="space-y-2">
           <Detail icon="calendar">{formatDate(data.startsAt)}</Detail>
           <Detail icon="ticket">{formatPrice(data.priceMinor, data.currency)}</Detail>
@@ -101,17 +102,17 @@ function Activity({ id }: { id: string }) {
           ) : data.spotsLeft === 0 ? (
             !book.isError && (
               <Notice tone="info" title="This one is full">
-                <Link href="/" className="font-medium text-ink underline">
+                <Link href="/" className="font-medium text-ink underline transition-opacity duration-300 hover:opacity-60">
                   See what else is on
                 </Link>
               </Notice>
             )
           ) : (
-            <Button arrow onClick={() => book.mutate()} disabled={book.isPending} className="w-full">
+            <Button arrow onClick={() => book.mutate()} disabled={book.isPending}>
               Book a spot · {formatPrice(data.priceMinor, data.currency)}
             </Button>
           )}
-          <p className="text-center text-xs text-muted">You won’t be charged in this prototype.</p>
+          <p className="text-xs text-muted">You won’t be charged in this prototype.</p>
         </Card>
       )}
 
@@ -145,7 +146,7 @@ function BookingError({ error }: { error: Error }) {
     return (
       <Notice tone="error" title="So close. Someone just took the last spot.">
         <p>We didn’t book you. </p>
-        <Link href="/" className="font-medium text-ink underline">
+        <Link href="/" className="font-medium text-ink underline transition-opacity duration-300 hover:opacity-60">
           See what else is on
         </Link>
       </Notice>

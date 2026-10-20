@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
-import { Card, Notice, Skeleton } from "@/components/ui";
+import { BackLink, Card, Notice, Skeleton } from "@/components/ui";
 import { API_URL, api, type Stats } from "@/lib/api";
 
 const FUNNEL = ["activity_viewed", "booked", "invite_created", "invite_opened", "spot_claimed"];
@@ -19,12 +19,13 @@ export default function StatsPage() {
   const { slos, goals, funnel, holdout } = stats.data;
 
   return (
-    <div className="space-y-4">
+    <div className="stagger space-y-4">
+      <BackLink />
       <div>
-        <h1 className="pb-4 text-[46.8px] md:text-[58px]">Tracking</h1>
+        <h1 className="pb-2 text-4xl md:text-[44px]">Tracking</h1>
         <p className="text-sm text-muted">
           Updates every 5 seconds. Raw counters at{" "}
-          <a className="underline" href={`${API_URL}/metrics`}>
+          <a className="underline transition-opacity duration-300 hover:opacity-60" href={`${API_URL}/metrics`}>
             /metrics
           </a>
           .
