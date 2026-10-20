@@ -131,7 +131,17 @@ Enter a code or paste a link, see the activity, and claim a spot.
 
 ## Plan vs. reality
 
-<!-- Write this after PLANS.md: where the build differs from the plans, and why. -->
+The build follows `PLANS.md`. These are the places where it changed course, and why:
+
+- **The holdout outcome.** My first holdout view compared an outcome that only the treatment group could reach, so it could not show cause. The view now compares activities that started with 2 or more bookings, for original users only. Both groups can reach that without invites.
+- **Counting people, not rows.** The first funnel and "bookers who invite" views counted rows, so one person who invited twice counted twice. They now count distinct people.
+- **The Flutter app opens the live stream before it fetches.** It first fetched, then opened the stream, so a booking made in between was missed. Now it opens the stream, fetches on every connect, and keeps the newer version.
+- **A guest who claimed a vouch saw "already used" when they came back.** `GET /invites/:code` now tells the client if the caller already joined, so they see "You're in the plan!".
+- **Redis no longer holds up a booking reply.** The API replies after the commit and publishes in the background. With Redis down, bookings still work, as the plan says.
+- **Guests can also claim on the web.** The brief puts the guest journey in Flutter only. An invite link opens in the phone's browser, and most first-time guests do not have the app, so the link needs a web page to land on. Flutter covers guests who have the app or a code. In the real product, the app would serve returning users in any role, and the web would be for first contact.
+- **Not built, as planned:** holds for vouched friends, the waitlist, deep links, authentication, and host and booker screens in the app. The vouch recipient is a name and is not verified.
+
+AI use: I used Claude Code to write most of the code, and Codex to review it in three rounds.
 
 ## Trade-offs
 
