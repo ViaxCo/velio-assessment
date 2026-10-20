@@ -126,7 +126,6 @@ function Activity({ id }: { id: string }) {
                   Book a spot · {formatPrice(data.priceMinor, data.currency)}
                 </Button>
               )}
-              <p className="text-xs text-muted">You won’t be charged in this prototype.</p>
             </Card>
           )}
 

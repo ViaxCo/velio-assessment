@@ -233,8 +233,6 @@ class _InviteScreenState extends State<InviteScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 8),
-        const Text('You won’t be charged in this prototype.', textAlign: TextAlign.center, style: TextStyle(color: muted, fontSize: 12)),
       ],
     );
   }
