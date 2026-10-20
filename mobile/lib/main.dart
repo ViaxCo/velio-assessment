@@ -89,10 +89,10 @@ class Rise extends StatelessWidget {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0, end: 1),
       duration: total,
-      curve: Interval(delay.inMilliseconds / total.inMilliseconds, 1, curve: soft),
+      curve: Interval(delay.inMilliseconds / total.inMilliseconds, 1, curve: Curves.fastOutSlowIn),
       builder: (context, t, child) => Opacity(
         opacity: t,
-        child: Transform.translate(offset: Offset(0, 24 * (1 - t)), child: child),
+        child: Transform.translate(offset: Offset(0, 20 * (1 - t)), child: child),
       ),
       child: child,
     );
