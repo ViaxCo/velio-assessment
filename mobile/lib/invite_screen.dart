@@ -294,7 +294,7 @@ class _InvitedBy extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final recipient = invite.recipient == null ? '' : ', ${invite.recipient}';
+    final recipient = invite.recipient == null ? '' : ' for ${invite.recipient}';
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
@@ -304,8 +304,11 @@ class _InvitedBy extends StatelessWidget {
             width: 44,
             height: 44,
             alignment: Alignment.center,
-            decoration: const BoxDecoration(color: lime, shape: BoxShape.circle),
-            child: Text(invite.inviterName.substring(0, 1).toUpperCase(), style: display.copyWith(fontSize: 18)),
+            decoration: const BoxDecoration(color: ink, shape: BoxShape.circle),
+            child: Text(
+              invite.inviterName.substring(0, 1).toUpperCase(),
+              style: display.copyWith(color: lime, fontSize: 18, fontWeight: FontWeight.w700),
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -313,12 +316,12 @@ class _InvitedBy extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  invite.isVouch ? '${invite.inviterName} vouched for you$recipient' : '${invite.inviterName} invited you',
+                  invite.isVouch ? '${invite.inviterName} vouched for you' : '${invite.inviterName} invited you',
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  invite.isVouch ? 'A vouch means they stand behind you.' : 'Anyone with this link can join.',
+                  invite.isVouch ? 'Personal invite$recipient' : 'Shared link',
                   style: const TextStyle(color: muted, fontSize: 14),
                 ),
               ],
