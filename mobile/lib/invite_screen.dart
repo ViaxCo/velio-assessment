@@ -100,7 +100,7 @@ class _InviteScreenState extends State<InviteScreen> {
 
   Future<void> _claim() async {
     final name = _name.text.trim();
-    if (name.isEmpty) return;
+    if (name.isEmpty || _claiming) return;
     HapticFeedback.selectionClick();
     setState(() {
       _claiming = true;
@@ -218,11 +218,20 @@ class _InviteScreenState extends State<InviteScreen> {
           decoration: const InputDecoration(labelText: 'Your first name'),
         ),
         const SizedBox(height: 12),
-        FilledButton(
-          onPressed: _claiming || _name.text.trim().isEmpty ? null : _claim,
-          child: _claiming
-              ? const SizedBox.square(dimension: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: ink))
-              : Text('Claim my spot · ${formatPrice(activity.priceMinor, activity.currency)}'),
+        PressScale(
+          child: FilledButton(
+            onPressed: _name.text.trim().isEmpty ? null : _claim,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Claim my spot · ${formatPrice(activity.priceMinor, activity.currency)}'),
+                if (_claiming) ...[
+                  const SizedBox(width: 12),
+                  const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2, color: ink)),
+                ],
+              ],
+            ),
+          ),
         ),
         const SizedBox(height: 8),
         const Text('You won’t be charged in this prototype.', textAlign: TextAlign.center, style: TextStyle(color: muted, fontSize: 12)),
@@ -377,19 +386,36 @@ class _OfflineBanner extends StatelessWidget {
   }
 }
 
-class _Loading extends StatelessWidget {
+class _Loading extends StatefulWidget {
   const _Loading();
+
+  @override
+  State<_Loading> createState() => _LoadingState();
+}
+
+class _LoadingState extends State<_Loading> with SingleTickerProviderStateMixin {
+  late final _pulse = AnimationController(vsync: this, duration: const Duration(seconds: 1), lowerBound: 0.5)
+    ..repeat(reverse: true);
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     Widget block(double height) => Container(
       height: height,
       margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(color: ink.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(32)),
     );
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(children: [block(32), block(140), block(52)]),
+    return FadeTransition(
+      opacity: _pulse,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(children: [block(32), block(140), block(52)]),
+      ),
     );
   }
 }
