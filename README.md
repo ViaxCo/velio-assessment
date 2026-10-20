@@ -139,6 +139,7 @@ Enter a code or paste a link, see the activity, and claim a spot.
 
 **Shortcuts:**
 - No real authentication. Any client can send any `X-User-Id`. In production, this would be a session or a signed token.
+- The tracking page, `/stats` and `/metrics` are open to everyone, so a reviewer can see them. In production, they would be for staff only.
 - Each guest identity belongs to a device. If the same person claims on a second phone, the system sees a new user and counts them as new.
 - Product goals are SQL views over the `events` table. This is fine for a prototype, but it would not scale to large traffic.
 - Latency is measured from commit to the moment the server writes to each stream. It does not include the network hop to the client. The load test checks this end to end on one machine.
