@@ -57,6 +57,8 @@ export const activityQuery = (id: string) => ({
   queryFn: () => api.getActivity(id),
 });
 
+export const statsQuery = { queryKey: ["stats"], queryFn: () => api.stats() };
+
 export class ApiError extends Error {
   constructor(
     readonly status: number,

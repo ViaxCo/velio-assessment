@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { BackLink, Card, Notice, Skeleton } from "@/components/ui";
-import { API_URL, api, type Stats } from "@/lib/api";
+import { API_URL, statsQuery, type Stats } from "@/lib/api";
 
 const FUNNEL = ["activity_viewed", "booked", "invite_created", "invite_opened", "spot_claimed"];
 const RAIL_STEPS = new Set(["invite_created", "invite_opened", "spot_claimed"]);
@@ -11,12 +11,7 @@ const RAIL_STEPS = new Set(["invite_created", "invite_opened", "spot_claimed"]);
 const pct = (value: number | null) => (value === null ? "—" : `${value}%`);
 
 export default function StatsPage() {
-  const stats = useQuery({ queryKey: ["stats"], queryFn: api.stats, refetchInterval: 5_000 });
-
-  if (stats.isPending) return <Skeleton className="h-96" />;
-  if (stats.isError) return <Notice tone="error" title="We couldn't load the tracking data">{stats.error.message}</Notice>;
-
-  const { slos, goals, funnel, holdout } = stats.data;
+  const stats = useQuery({ ...statsQuery, refetchInterval: 5_000 });
 
   return (
     <div className="stagger space-y-4">
@@ -32,6 +27,22 @@ export default function StatsPage() {
         </p>
       </div>
 
+      {stats.isPending ? (
+        <Skeleton className="h-96" />
+      ) : stats.isError ? (
+        <Notice tone="error" title="We couldn't load the tracking data">
+          {stats.error.message}
+        </Notice>
+      ) : (
+        <Sections stats={stats.data} />
+      )}
+    </div>
+  );
+}
+
+function Sections({ stats: { slos, goals, funnel, holdout } }: { stats: Stats }) {
+  return (
+    <>
       <Section title="Technical SLOs">
         {slos.map((slo) => (
           <Row key={slo.goal} label={slo.goal} hint={slo.target} status={slo.met}>
@@ -76,7 +87,7 @@ export default function StatsPage() {
           </Row>
         ))}
       </Section>
-    </div>
+    </>
   );
 }
 

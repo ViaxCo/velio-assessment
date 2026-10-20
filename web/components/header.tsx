@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { statsQuery } from "@/lib/api";
 import { useIdentity, type Role } from "@/lib/identity";
 import { Logo } from "./logo";
 
@@ -14,6 +16,7 @@ const roles: { value: Role; label: string }[] = [
 export function Header() {
   const { user, role, setRole, switchPerson } = useIdentity();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -96,6 +99,7 @@ export function Header() {
                 <Link
                   role="menuitem"
                   href="/stats"
+                  onPointerEnter={() => queryClient.prefetchQuery(statsQuery)}
                   onClick={() => setMenuOpen(false)}
                   className="block rounded-2xl px-3 py-2 transition-colors duration-200 hover:bg-canvas"
                 >
