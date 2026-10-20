@@ -32,7 +32,7 @@ function useIdentityState() {
     queryKey: ["user", userId],
     queryFn: async () => {
       const found = await fetchUser(userId!);
-      remember(found);
+      if (localStorage.getItem("velio.userId") === userId) remember(found);
       return found;
     },
     enabled: Boolean(userId && savedUser),
