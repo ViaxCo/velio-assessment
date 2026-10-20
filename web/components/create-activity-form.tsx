@@ -17,7 +17,7 @@ export function CreateActivityForm() {
         title: String(form.get("title")),
         description: String(form.get("description")),
         startsAt: new Date(String(form.get("startsAt"))).toISOString(),
-        priceMinor: Math.round(Number(form.get("price")) * 100),
+        priceMinor: Number(String(form.get("price")).replaceAll(",", "")) * 100,
         capacity: Number(form.get("capacity")),
       }),
     onSuccess: (activity) => {
@@ -55,7 +55,19 @@ export function CreateActivityForm() {
           </label>
           <label className="text-sm">
             <span className="mb-1 block font-medium text-ink/80">Price (₦)</span>
-            <input name="price" type="number" min={0} step="any" defaultValue={15000} className={inputClass} required />
+            <input
+              name="price"
+              inputMode="numeric"
+              defaultValue="15,000"
+              onChange={({ target }) => {
+                const fromEnd = target.value.length - (target.selectionStart ?? 0);
+                const digits = target.value.replace(/\D/g, "");
+                target.value = digits && Number(digits).toLocaleString("en-NG");
+                target.setSelectionRange(target.value.length - fromEnd, target.value.length - fromEnd);
+              }}
+              className={inputClass}
+              required
+            />
           </label>
         </div>
         <label className="block text-sm">
