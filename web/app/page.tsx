@@ -27,7 +27,7 @@ function Activities() {
   const shown = activities.data?.filter((activity) => (isHost ? activity.hostId === userId : !activity.booked));
 
   return (
-    <div key={role} className="stagger space-y-4">
+    <div key={`${role}-${userId}`} className="stagger space-y-4">
       {plans.length > 0 && (
         <>
           <h1 className="pb-2 text-4xl md:text-[44px]">Your plans</h1>
