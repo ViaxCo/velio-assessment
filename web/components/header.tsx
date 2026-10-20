@@ -18,7 +18,6 @@ export function Header() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [switchFailed, setSwitchFailed] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const accountRef = useRef<HTMLButtonElement>(null);
 
@@ -81,10 +80,7 @@ export function Header() {
                 ref={accountRef}
                 aria-label="Account"
                 aria-expanded={menuOpen}
-                onClick={() => {
-                  setMenuOpen((open) => !open);
-                  setSwitchFailed(false);
-                }}
+                onClick={() => setMenuOpen((open) => !open)}
                 className="flex size-11 items-center justify-center rounded-full bg-lime transition-all duration-300 hover:bg-lime-hover active:scale-95"
               >
                 <span className="flex size-8 items-center justify-center rounded-full bg-white text-sm font-medium text-ink">
@@ -119,13 +115,8 @@ export function Header() {
                         <button
                           key={person.id}
                           disabled={current}
-                          onClick={async () => {
-                            setSwitchFailed(false);
-                            try {
-                              await switchPerson(person.id);
-                            } catch {
-                              return setSwitchFailed(true);
-                            }
+                          onClick={() => {
+                            switchPerson(person);
                             setMenuOpen(false);
                             goHome();
                           }}
@@ -137,11 +128,6 @@ export function Header() {
                       );
                     })}
                   </div>
-                  {switchFailed && (
-                    <p role="alert" className="px-3 py-2 text-xs text-alert">
-                      We couldn&apos;t switch. Try again.
-                    </p>
-                  )}
                   <button
                     onClick={() => {
                       setMenuOpen(false);

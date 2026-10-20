@@ -67,7 +67,6 @@ export function NameGate({ children }: { children: ReactNode }) {
 
 function RememberedPeople() {
   const { people, switchPerson } = useIdentity();
-  const [switchFailed, setSwitchFailed] = useState(false);
 
   if (people.length === 0) return null;
 
@@ -78,21 +77,13 @@ function RememberedPeople() {
         {people.map((person) => (
           <button
             key={person.id}
-            onClick={async () => {
-              setSwitchFailed(false);
-              try {
-                await switchPerson(person.id);
-              } catch {
-                setSwitchFailed(true);
-              }
-            }}
+            onClick={() => switchPerson(person)}
             className="min-h-10 rounded-full bg-canvas px-4 text-sm font-medium transition-all duration-300 hover:bg-ink/10 active:scale-95"
           >
             {person.name}
           </button>
         ))}
       </div>
-      {switchFailed && <Notice tone="error" title="We couldn't switch. Try again." />}
     </div>
   );
 }

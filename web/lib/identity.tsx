@@ -19,14 +19,13 @@ function useIdentityState() {
   const [role, setRole] = useLocalStorage("velio.role", () => "booker");
   const [savedUser, setSavedUser] = useLocalStorage("velio.user");
   const [savedPeople, setSavedPeople] = useLocalStorage("velio.people");
-  const people: Pick<User, "id" | "name">[] = savedPeople ? JSON.parse(savedPeople) : [];
+  const people: User[] = savedPeople ? JSON.parse(savedPeople) : [];
 
   const remember = (next: User | null) => {
     setSavedUser(next && JSON.stringify(next));
     if (!next) return;
-    const person = { id: next.id, name: next.name };
     const known = people.some(({ id }) => id === next.id);
-    setSavedPeople(JSON.stringify(known ? people.map((other) => (other.id === next.id ? person : other)) : [...people, person]));
+    setSavedPeople(JSON.stringify(known ? people.map((other) => (other.id === next.id ? next : other)) : [...people, next]));
   };
 
   const user = useQuery({
@@ -56,11 +55,9 @@ function useIdentityState() {
       remember(saved);
     },
     people,
-    async switchPerson(id: string) {
-      const found = await fetchUser(id);
-      queryClient.setQueryData(["user", id], found);
-      remember(found);
-      setUserId(id);
+    switchPerson(person: User) {
+      setSavedUser(JSON.stringify(person));
+      setUserId(person.id);
     },
     newPerson: () => {
       remember(null);
