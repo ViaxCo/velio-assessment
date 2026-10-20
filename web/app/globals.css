@@ -27,7 +27,8 @@
 
 @theme {
   --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
-  --animate-rise: rise 0.7s var(--ease-soft) backwards;
+  --animate-rise: rise 0.7s var(--ease-in-out) backwards;
+  --animate-rise-heading: rise-heading 0.8s var(--ease-in-out) backwards;
   --animate-drop: drop 0.5s var(--ease-soft) backwards;
   --animate-pop: pop 0.35s var(--ease-soft);
 
@@ -35,7 +36,15 @@
     from {
       opacity: 0;
       filter: blur(8px);
-      transform: translateY(24px);
+      transform: translateY(20px);
+    }
+  }
+
+  @keyframes rise-heading {
+    from {
+      opacity: 0;
+      filter: blur(10px);
+      transform: translateY(30px);
     }
   }
 
@@ -58,6 +67,9 @@
 @utility stagger {
   & > * {
     animation: var(--animate-rise);
+  }
+  & > h1 {
+    animation: var(--animate-rise-heading);
   }
   & > :nth-child(2) {
     animation-delay: 60ms;

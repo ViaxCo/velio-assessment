@@ -54,10 +54,8 @@ export function NameGate({ children }: { children: ReactNode }) {
     <>
       {!userId && <Skeleton className="hidden h-48 named:block" />}
       <div className={`stagger mx-auto max-w-md space-y-8 ${userId ? "" : "named:hidden"}`}>
-        <div>
-          <h1 className="text-[40px] md:text-5xl">Do more things, with more people.</h1>
-          <p className="mt-4 text-xl/[30px] font-medium text-ink/80">Tell us your name so your friends know who’s coming.</p>
-        </div>
+        <h1 className="mb-4 text-[40px] md:text-5xl">Do more things, with more people.</h1>
+        <p className="text-xl/[30px] font-medium text-ink/80">Tell us your name so your friends know who’s coming.</p>
         <Card>
           <NameForm cta="Continue" onSubmit={saveName} />
         </Card>

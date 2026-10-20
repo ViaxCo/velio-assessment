@@ -16,16 +16,14 @@ export default function StatsPage() {
   return (
     <div className="stagger space-y-4">
       <BackLink />
-      <div>
-        <h1 className="pb-2 text-4xl md:text-[44px]">Tracking</h1>
-        <p className="text-sm text-muted">
-          Updates every 5 seconds. Raw counters at{" "}
-          <a className="underline transition-opacity duration-300 hover:opacity-60" href={`${API_URL}/metrics`}>
-            /metrics
-          </a>
-          .
-        </p>
-      </div>
+      <h1 className="mb-2 text-4xl md:text-[44px]">Tracking</h1>
+      <p className="text-sm text-muted">
+        Updates every 5 seconds. Raw counters at{" "}
+        <a className="underline transition-opacity duration-300 hover:opacity-60" href={`${API_URL}/metrics`}>
+          /metrics
+        </a>
+        .
+      </p>
 
       <div className="space-y-4">
         {stats.isPending ? (
