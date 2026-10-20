@@ -13,7 +13,7 @@ mobile/    Flutter app for the invited guest
 You need Docker, Node 24 and Flutter 3.41.
 
 ```sh
-docker compose up -d                 # Postgres on 5433, Redis on 6380
+docker compose up -d --wait          # Postgres on 5433, Redis on 6380, waits until both are ready
 
 cd backend
 npm install
