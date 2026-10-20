@@ -22,11 +22,16 @@ export function ActivityCard({ activity, showAttendance, booked }: { activity: A
           <p className="mt-1.5 text-sm font-medium text-ink/80">
             {formatDate(activity.startsAt)} · {formatPrice(activity.priceMinor, activity.currency)}
           </p>
+          {booked && (
+            <p className="mt-2 flex items-center gap-1.5 text-sm font-bold">
+              <svg viewBox="0 0 24 24" aria-hidden className="size-4 fill-none stroke-current stroke-[2.5]">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+              You&apos;re in
+            </p>
+          )}
         </div>
-        <div className="flex shrink-0 flex-col items-end gap-1.5">
-          <SpotsBadge activity={activity} />
-          {booked && <span className="rounded-full bg-lime px-3 py-1 text-xs font-bold text-ink">You&apos;re in</span>}
-        </div>
+        <SpotsBadge activity={activity} />
       </div>
       {showAttendance && (
         <div className="mt-4">
