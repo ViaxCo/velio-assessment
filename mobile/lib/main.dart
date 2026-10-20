@@ -59,7 +59,9 @@ class VelioGuestApp extends StatelessWidget {
             textStyle: const TextStyle(fontFamily: 'Satoshi', fontSize: 16, fontWeight: FontWeight.w500),
           ),
         ),
+        textSelectionTheme: const TextSelectionThemeData(cursorColor: ink),
         inputDecorationTheme: InputDecorationTheme(
+          floatingLabelStyle: const TextStyle(color: ink),
           filled: true,
           fillColor: Colors.white,
           enabledBorder: field(BorderSide.none),
