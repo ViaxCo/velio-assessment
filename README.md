@@ -47,7 +47,7 @@ flutter run --dart-define=API_URL=http://192.168.1.20:4000
 4. Open the link in a third window, or enter the code in the Flutter app, and claim the spot.
 5. Open http://localhost:3000/stats to see the funnel, the goals and the SLOs.
 
-Identity is a UUID made on the device and kept in local storage. "Switch person" in the avatar menu gives you a new identity.
+Identity is a UUID made on the device and kept in local storage. The avatar menu lists the people made in this browser, so you can switch back to one of them, or pick "New person" to start a new identity.
 
 ## Architecture and decisions
 
@@ -113,7 +113,7 @@ I chose SSE over WebSockets because the data goes one way, it works through most
 
 ### Web app
 
-Next.js with TanStack Query and Tailwind, built mobile first. Booking is optimistic: the spot count changes at once. If the API says the activity sold out, the app does not roll back to the old count. It marks the activity as full and shows a kind message, because the old count is now wrong. Live events update the query cache directly.
+Next.js with TanStack Query and Tailwind, built mobile first. Booking is optimistic: the spot count changes at once. If the API says the activity sold out, the app does not roll back to the old count. It marks the activity as full and shows a kind message, because the old count is now wrong. Live events update the query cache directly. A booker's home page shows "Your plans" first, from a `booked` flag that `GET /activities` returns for the caller.
 
 ### Flutter app
 
