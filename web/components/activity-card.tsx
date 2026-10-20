@@ -6,7 +6,7 @@ import { activityQuery, type Activity } from "@/lib/api";
 import { formatDate, formatPrice } from "@/lib/format";
 import { SpotsBadge } from "./ui";
 
-export function ActivityCard({ activity, showAttendance }: { activity: Activity; showAttendance?: boolean }) {
+export function ActivityCard({ activity, showAttendance, booked }: { activity: Activity; showAttendance?: boolean; booked?: boolean }) {
   const queryClient = useQueryClient();
   const filled = (activity.spotsTaken / activity.capacity) * 100;
 
@@ -23,7 +23,10 @@ export function ActivityCard({ activity, showAttendance }: { activity: Activity;
             {formatDate(activity.startsAt)} · {formatPrice(activity.priceMinor, activity.currency)}
           </p>
         </div>
-        <SpotsBadge activity={activity} />
+        <div className="flex shrink-0 flex-col items-end gap-1.5">
+          <SpotsBadge activity={activity} />
+          {booked && <span className="rounded-full bg-lime px-3 py-1 text-xs font-bold text-ink">You&apos;re in</span>}
+        </div>
       </div>
       {showAttendance && (
         <div className="mt-4">

@@ -33,6 +33,8 @@ export type Attendee = {
 
 export type ActivityDetail = Activity & { attendees: Attendee[] };
 
+export type ActivitySummary = Activity & { booked: boolean };
+
 export type Rail = "vouch" | "public";
 
 export type Invite = {
@@ -51,6 +53,11 @@ export type InviteDetail = Invite & {
 };
 
 export type Booking = { id: string; activityId: string; planId: string; userId: string };
+
+export const activitiesQuery = (userId: string) => ({
+  queryKey: ["activities", userId],
+  queryFn: () => api.listActivities(userId),
+});
 
 export const activityQuery = (id: string) => ({
   queryKey: ["activity", id],
@@ -89,7 +96,7 @@ async function request<T>(path: string, init: { method?: string; userId?: string
 export const api = {
   getUser: (id: string) => request<User>(`/users/${id}`),
   saveUser: (id: string, name: string) => request<User>(`/users/${id}`, { method: "PUT", body: { name } }),
-  listActivities: () => request<Activity[]>("/activities"),
+  listActivities: (userId: string) => request<ActivitySummary[]>("/activities", { userId }),
   getActivity: (id: string) => request<ActivityDetail>(`/activities/${id}`),
   createActivity: (userId: string, body: Pick<Activity, "title" | "description" | "startsAt" | "priceMinor" | "capacity">) =>
     request<Activity>("/activities", { method: "POST", userId, body }),

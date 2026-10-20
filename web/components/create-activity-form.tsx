@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { api, type Activity } from "@/lib/api";
+import { activitiesQuery, api, type ActivitySummary } from "@/lib/api";
 import { useIdentity } from "@/lib/identity";
 import { Button, Card, inputClass, Notice } from "./ui";
 
@@ -21,8 +21,8 @@ export function CreateActivityForm() {
         capacity: Number(form.get("capacity")),
       }),
     onSuccess: (activity) => {
-      queryClient.setQueryData<Activity[]>(["activities"], (activities = []) =>
-        [...activities, activity].sort((a, b) => a.startsAt.localeCompare(b.startsAt)),
+      queryClient.setQueryData<ActivitySummary[]>(activitiesQuery(userId!).queryKey, (activities = []) =>
+        [...activities, { ...activity, booked: false }].sort((a, b) => a.startsAt.localeCompare(b.startsAt)),
       );
       setOpen(false);
     },

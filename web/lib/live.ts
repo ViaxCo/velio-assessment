@@ -24,7 +24,7 @@ export function useLiveAvailability(activityId?: string) {
 
     source.onmessage = (message) => {
       const event: AvailabilityEvent = JSON.parse(message.data);
-      queryClient.setQueryData<Activity[]>(["activities"], (activities) =>
+      queryClient.setQueriesData<Activity[]>({ queryKey: ["activities"] }, (activities) =>
         activities?.map((activity) => (activity.id === event.activityId ? applyEvent(activity, event) : activity)),
       );
       queryClient.setQueryData<ActivityDetail>(["activity", event.activityId], (activity) => activity && applyEvent(activity, event));

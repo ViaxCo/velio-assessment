@@ -7,7 +7,7 @@ import { Attendees } from "@/components/attendees";
 import { InvitePanel } from "@/components/invite-panel";
 import { NameGate } from "@/components/name-gate";
 import { BackLink, Button, Card, Detail, Notice, Skeleton, SpotsBadge } from "@/components/ui";
-import { activityQuery, api, ApiError, type Activity as ActivitySummary, type ActivityDetail } from "@/lib/api";
+import { activitiesQuery, activityQuery, api, ApiError, type ActivityDetail, type ActivitySummary } from "@/lib/api";
 import { formatDate, formatPrice } from "@/lib/format";
 import { useIdentity } from "@/lib/identity";
 import { useLiveAvailability } from "@/lib/live";
@@ -27,7 +27,7 @@ function Activity({ id }: { id: string }) {
   const activity = useQuery({
     ...activityQuery(id),
     placeholderData: () => {
-      const summary = queryClient.getQueryData<ActivitySummary[]>(["activities"])?.find((item) => item.id === id);
+      const summary = queryClient.getQueryData<ActivitySummary[]>(activitiesQuery(user!.id).queryKey)?.find((item) => item.id === id);
       return summary && { ...summary, attendees: [] };
     },
   });
@@ -66,6 +66,10 @@ function Activity({ id }: { id: string }) {
           : context?.previous ?? current,
       );
     },
+    onSuccess: () =>
+      queryClient.setQueryData<ActivitySummary[]>(activitiesQuery(user!.id).queryKey, (activities) =>
+        activities?.map((activity) => (activity.id === id ? { ...activity, booked: true } : activity)),
+      ),
     onSettled: () => queryClient.invalidateQueries({ queryKey }),
   });
 
