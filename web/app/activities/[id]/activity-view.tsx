@@ -132,7 +132,7 @@ function Activity({ id }: { id: string }) {
 
           {myBooking && (
             <Notice tone="success" title={myBooking.planId === "pending" ? "Booking your spot…" : "You're in!"}>
-              {myBooking.planId === "pending" ? "Hold tight." : "Invite friends below. They'll join your plan."}
+              {myBooking.planId === "pending" ? "Hold tight." : user?.invitesEnabled && "Invite friends below. They'll join your plan."}
             </Notice>
           )}
 
