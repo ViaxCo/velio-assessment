@@ -8,7 +8,10 @@ const ink = Color(0xFF173600);
 const muted = Color(0x80173600);
 const canvas = Color(0xFFF5F3EC);
 const lime = Color(0xFF97E565);
+const limeSoft = Color(0xFFD9F0C4);
 const alert = Color(0xFFB3261E);
+const alertSoft = Color(0xFFFBE4DF);
+const haze = Color(0x0D173600);
 const display = TextStyle(fontFamily: 'Nohemi', fontWeight: FontWeight.w500, height: 1.1);
 const soft = Cubic(0.22, 1, 0.36, 1);
 

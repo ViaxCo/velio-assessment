@@ -167,35 +167,31 @@ class _InviteScreenState extends State<InviteScreen> {
     final activity = invite.activity;
     if (invite.joined) {
       return _Notice(
-        color: lime,
-        icon: Icons.check_circle,
+        color: limeSoft,
         title: 'You’re in the plan!',
         body: '${invite.inviterName} will see you’ve joined. See you on ${formatDate(activity.startsAt)}.',
       );
     }
     if (_claimError?.code == 'sold_out') {
       return _Notice(
-        color: alert,
-        icon: Icons.sentiment_dissatisfied,
+        color: alertSoft,
         title: 'So close. The last spot just went.',
         body: 'We didn’t book you. Ask ${invite.inviterName} what’s next.',
       );
     }
     if (invite.used) {
       return _Notice(
-        color: muted,
-        icon: Icons.link_off,
+        color: haze,
         title: 'This personal invite has already been used',
         body: 'Ask ${invite.inviterName} to send you a new one.',
       );
     }
     if (activity.started) {
-      return const _Notice(color: muted, icon: Icons.schedule, title: 'This activity has already started');
+      return const _Notice(color: haze, title: 'This activity has already started');
     }
     if (activity.spotsLeft == 0) {
       return _Notice(
-        color: muted,
-        icon: Icons.event_busy,
+        color: haze,
         title: 'This one filled up before you got here',
         body: 'Ask ${invite.inviterName} about the next one.',
       );
@@ -205,7 +201,7 @@ class _InviteScreenState extends State<InviteScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (_claimError != null) ...[
-          _Notice(color: alert, icon: Icons.error_outline, title: 'We couldn’t claim your spot', body: _claimError!.message),
+          _Notice(color: alertSoft, title: 'We couldn’t claim your spot', body: _claimError!.message),
           const SizedBox(height: 12),
         ],
         TextField(
@@ -329,32 +325,22 @@ class _InvitedBy extends StatelessWidget {
 }
 
 class _Notice extends StatelessWidget {
-  const _Notice({required this.color, required this.icon, required this.title, this.body});
+  const _Notice({required this.color, required this.title, this.body});
 
   final Color color;
-  final IconData icon;
   final String title;
   final String? body;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-      child: Row(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(16)),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: color),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
-                if (body != null) ...[const SizedBox(height: 4), Text(body!, style: const TextStyle(color: muted))],
-              ],
-            ),
-          ),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
+          if (body != null) ...[const SizedBox(height: 4), Text(body!, style: TextStyle(color: ink.withValues(alpha: 0.8)))],
         ],
       ),
     );
@@ -406,7 +392,7 @@ class _LoadingState extends State<_Loading> with SingleTickerProviderStateMixin 
     Widget block(double height) => Container(
       height: height,
       margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(color: ink.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(32)),
+      decoration: BoxDecoration(color: haze, borderRadius: BorderRadius.circular(32)),
     );
     return FadeTransition(
       opacity: _pulse,
@@ -433,8 +419,7 @@ class _LoadFailed extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _Notice(
-            color: alert,
-            icon: notFound ? Icons.search_off : Icons.cloud_off,
+            color: alertSoft,
             title: notFound ? 'We couldn’t find that invite' : 'We couldn’t load this invite',
             body: notFound ? 'Check the code with the friend who sent it.' : error.message,
           ),
