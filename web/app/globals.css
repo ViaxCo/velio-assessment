@@ -5,7 +5,7 @@
   --color-card: #ffffff;
   --color-ink: #173600;
   --color-forest: #163300;
-  --color-muted: #5d724d;
+  --color-muted: rgb(23 54 0 / 0.5);
   --color-line: #e8e5da;
   --color-lime: #97e565;
   --color-lime-hover: #88d956;
@@ -27,12 +27,11 @@ body {
     font-family: var(--font-display);
     font-weight: 600;
     line-height: 1.1;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
   }
 
   h1 {
     font-weight: 700;
     line-height: 1;
-    letter-spacing: 0.025em;
   }
 }

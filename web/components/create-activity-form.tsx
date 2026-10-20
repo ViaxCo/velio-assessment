@@ -30,7 +30,7 @@ export function CreateActivityForm() {
 
   if (!open) {
     return (
-      <Button onClick={() => setOpen(true)} className="w-full">
+      <Button arrow onClick={() => setOpen(true)} className="w-full">
         Create an activity
       </Button>
     );
@@ -50,16 +50,16 @@ export function CreateActivityForm() {
         <textarea name="description" placeholder="What should people expect?" className={inputClass} rows={3} maxLength={1000} />
         <div className="grid grid-cols-2 gap-3">
           <label className="text-sm">
-            <span className="mb-1 block text-muted">Spots</span>
+            <span className="mb-1 block font-medium text-ink/80">Spots</span>
             <input name="capacity" type="number" min={1} max={1000} defaultValue={10} className={inputClass} required />
           </label>
           <label className="text-sm">
-            <span className="mb-1 block text-muted">Price (₦)</span>
+            <span className="mb-1 block font-medium text-ink/80">Price (₦)</span>
             <input name="price" type="number" min={0} step="any" defaultValue={15000} className={inputClass} required />
           </label>
         </div>
         <label className="block text-sm">
-          <span className="mb-1 block text-muted">Starts</span>
+          <span className="mb-1 block font-medium text-ink/80">Starts</span>
           <input name="startsAt" type="datetime-local" className={inputClass} required />
         </label>
         {create.error && <Notice tone="error" title="We couldn't create this activity">{create.error.message}</Notice>}

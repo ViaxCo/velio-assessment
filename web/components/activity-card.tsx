@@ -9,12 +9,12 @@ export function ActivityCard({ activity, showAttendance }: { activity: Activity;
   return (
     <Link
       href={`/activities/${activity.id}`}
-      className="block rounded-[28px] bg-card p-5 ring-1 ring-transparent transition hover:ring-ink/15 active:scale-[0.99] sm:p-6"
+      className="block rounded-[32px] bg-card p-6 ring-1 ring-transparent transition-all duration-300 hover:ring-ink/10 active:scale-[0.99] md:p-8"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 className="text-xl">{activity.title}</h2>
-          <p className="mt-1.5 text-sm font-medium text-muted">
+          <p className="mt-1.5 text-sm font-medium text-ink/80">
             {formatDate(activity.startsAt)} · {formatPrice(activity.priceMinor, activity.currency)}
           </p>
         </div>

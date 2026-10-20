@@ -26,7 +26,7 @@ export function InviteView({ code }: { code: string }) {
       <Notice tone="error" title={notFound ? "We couldn't find that invite" : "We couldn't load this invite"}>
         <p>{notFound ? "Check the code with the friend who sent it." : invite.error.message}</p>
         {!notFound && (
-          <Button onClick={() => invite.refetch()} className="mt-3 min-h-10 px-4 text-sm">
+          <Button small onClick={() => invite.refetch()} className="mt-3">
             Try again
           </Button>
         )}
@@ -53,7 +53,7 @@ function Invite({ invite }: { invite: InviteDetail }) {
   return (
     <div className="mx-auto max-w-md space-y-4">
       <Card className="space-y-4">
-        <h1 className="text-[32px]">{activity.title}</h1>
+        <h1 className="text-[32px] md:text-[40px]">{activity.title}</h1>
         <div className="space-y-2">
           <Detail icon="calendar">{formatDate(activity.startsAt)}</Detail>
           <Detail icon="ticket">{formatPrice(activity.priceMinor, activity.currency)}</Detail>
@@ -119,7 +119,7 @@ function ClaimState({ invite }: { invite: InviteDetail }) {
     <>
       {claim.error && <Notice tone="error" title="We couldn't claim your spot">{claim.error.message}</Notice>}
       {user ? (
-        <Button onClick={() => claim.mutate(user.name)} disabled={claim.isPending} className="w-full">
+        <Button arrow onClick={() => claim.mutate(user.name)} disabled={claim.isPending} className="w-full">
           {claim.isPending ? "Claiming…" : `Claim my spot as ${user.name}`}
         </Button>
       ) : (

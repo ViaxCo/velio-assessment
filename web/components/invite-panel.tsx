@@ -22,7 +22,7 @@ export function InvitePanel({ activityId, title }: { activityId: string; title: 
   if (!user?.invitesEnabled) return null;
 
   return (
-    <section className="space-y-4 rounded-[28px] bg-forest p-5 text-white sm:p-6">
+    <section className="space-y-4 rounded-[32px] bg-forest p-6 text-white md:p-8">
       <div>
         <h2 className="text-2xl">Bring your people</h2>
         <p className="mt-1 text-white/75">Plans happen when friends come too.</p>
@@ -49,7 +49,7 @@ export function InvitePanel({ activityId, title }: { activityId: string; title: 
             maxLength={80}
             required
           />
-          <Button type="submit" disabled={create.isPending || !recipient.trim()} className="shrink-0 px-5">
+          <Button type="submit" disabled={create.isPending || !recipient.trim()} className="shrink-0">
             Vouch
           </Button>
         </div>
@@ -92,7 +92,8 @@ function InviteLink({ invite, title }: { invite: Invite; title: string }) {
       <div className="mt-2 flex gap-2">
         <input readOnly value={invite.url} className={`${inputClass} py-2 text-sm`} onFocus={(event) => event.target.select()} />
         <Button
-          className="min-h-10 shrink-0 px-4 text-sm"
+          small
+          className="shrink-0"
           onClick={async () => {
             if (navigator.share) {
               await navigator.share({ title, text, url: invite.url }).catch(() => undefined);

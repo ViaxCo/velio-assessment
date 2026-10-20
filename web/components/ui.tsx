@@ -1,17 +1,33 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import type { Activity } from "@/lib/api";
 
-export function Button({ className = "", ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
+export function Button({
+  arrow,
+  small,
+  className = "",
+  children,
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement> & { arrow?: boolean; small?: boolean }) {
+  const shape = arrow ? "justify-between py-1.5 pl-5 pr-1.5" : small ? "justify-center px-4" : "justify-center px-5";
   return (
     <button
-      className={`inline-flex min-h-12 items-center justify-center rounded-full bg-lime px-6 font-medium text-ink transition hover:brightness-95 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${className}`}
+      className={`group inline-flex items-center gap-3 rounded-full bg-lime font-medium text-ink transition-all duration-300 enabled:hover:bg-lime-hover enabled:active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 ${small ? "min-h-10 text-sm" : "min-h-12 text-[15px]"} ${shape} ${className}`}
       {...props}
-    />
+    >
+      {children}
+      {arrow && (
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white transition-transform duration-300 group-hover:rotate-45">
+          <svg viewBox="0 0 24 24" aria-hidden className="size-4 fill-none stroke-current stroke-2 [stroke-linecap:round] [stroke-linejoin:round]">
+            <path d="M7 7h10v10M7 17 17 7" />
+          </svg>
+        </span>
+      )}
+    </button>
   );
 }
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`rounded-[28px] bg-card p-5 sm:p-6 ${className}`}>{children}</div>;
+  return <div className={`rounded-[32px] bg-card p-6 md:p-8 ${className}`}>{children}</div>;
 }
 
 export function Notice({ tone, title, children }: { tone: "error" | "success" | "info"; title: string; children?: ReactNode }) {
@@ -68,8 +84,8 @@ export function Detail({ icon, children }: { icon: keyof typeof icons; children:
 }
 
 export function Skeleton({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse rounded-[28px] bg-ink/5 ${className}`} />;
+  return <div className={`animate-pulse rounded-[32px] bg-ink/5 ${className}`} />;
 }
 
 export const inputClass =
-  "w-full rounded-2xl border border-line bg-card px-4 py-3 text-base text-ink outline-none transition placeholder:text-muted/70 focus:border-ink";
+  "w-full rounded-2xl border border-line bg-card px-4 py-3 text-base text-ink outline-none transition placeholder:text-[#0a0a0a]/30 focus:border-ink";

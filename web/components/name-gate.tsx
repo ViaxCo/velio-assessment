@@ -38,7 +38,7 @@ export function NameForm({ cta, onSubmit }: { cta: string; onSubmit: (name: stri
         required
       />
       {error && <Notice tone="error" title={error} />}
-      <Button type="submit" disabled={saving || !name.trim()} className="w-full">
+      <Button arrow type="submit" disabled={saving || !name.trim()} className="w-full">
         {saving ? "One moment…" : cta}
       </Button>
     </form>
@@ -52,12 +52,14 @@ export function NameGate({ children }: { children: ReactNode }) {
   if (user) return children;
 
   return (
-    <Card className="mx-auto mt-8 max-w-md space-y-4">
+    <div className="mx-auto max-w-md space-y-8">
       <div>
-        <h1 className="text-[32px]">Do more things, with more people.</h1>
-        <p className="mt-3 font-medium text-ink/80">Tell us your name so your friends know who’s coming.</p>
+        <h1 className="text-[46.8px] md:text-[58px]">Do more things, with more people.</h1>
+        <p className="mt-4 text-xl/[30px] font-medium text-ink/80">Tell us your name so your friends know who’s coming.</p>
       </div>
-      <NameForm cta="Continue" onSubmit={saveName} />
-    </Card>
+      <Card>
+        <NameForm cta="Continue" onSubmit={saveName} />
+      </Card>
+    </div>
   );
 }

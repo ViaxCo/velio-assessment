@@ -27,13 +27,13 @@ function Activities() {
 
   return (
     <div className="space-y-4">
-      <h1 className="pb-2 pt-4 text-[40px] sm:text-5xl">{isHost ? "Your activities" : "Happening soon"}</h1>
+      <h1 className="pb-4 text-[46.8px] md:text-[58px]">{isHost ? "Your activities" : "Happening soon"}</h1>
       {isHost && <CreateActivityForm />}
       {activities.isPending && [1, 2, 3].map((key) => <Skeleton key={key} className="h-24" />)}
       {activities.isError && (
         <Notice tone="error" title="We couldn't load activities">
           <p>{activities.error.message}</p>
-          <Button onClick={() => activities.refetch()} className="mt-3 min-h-10 px-4 text-sm">
+          <Button small onClick={() => activities.refetch()} className="mt-3">
             Try again
           </Button>
         </Notice>

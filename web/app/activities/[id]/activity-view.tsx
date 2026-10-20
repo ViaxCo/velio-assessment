@@ -83,7 +83,7 @@ function Activity({ id }: { id: string }) {
   return (
     <div className="space-y-4">
       <Card className="space-y-3">
-        <h1 className="text-[32px] sm:text-4xl">{data.title}</h1>
+        <h1 className="text-[32px] md:text-[40px]">{data.title}</h1>
         <div className="space-y-2">
           <Detail icon="calendar">{formatDate(data.startsAt)}</Detail>
           <Detail icon="ticket">{formatPrice(data.priceMinor, data.currency)}</Detail>
@@ -107,7 +107,7 @@ function Activity({ id }: { id: string }) {
               </Notice>
             )
           ) : (
-            <Button onClick={() => book.mutate()} disabled={book.isPending} className="w-full">
+            <Button arrow onClick={() => book.mutate()} disabled={book.isPending} className="w-full">
               Book a spot · {formatPrice(data.priceMinor, data.currency)}
             </Button>
           )}

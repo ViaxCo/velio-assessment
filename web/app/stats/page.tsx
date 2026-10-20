@@ -21,7 +21,7 @@ export default function StatsPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="pb-2 pt-4 text-[40px] sm:text-5xl">Tracking</h1>
+        <h1 className="pb-4 text-[46.8px] md:text-[58px]">Tracking</h1>
         <p className="text-sm text-muted">
           Updates every 5 seconds. Raw counters at{" "}
           <a className="underline" href={`${API_URL}/metrics`}>
