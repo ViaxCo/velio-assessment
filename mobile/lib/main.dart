@@ -10,6 +10,7 @@ const canvas = Color(0xFFF5F3EC);
 const lime = Color(0xFF97E565);
 const alert = Color(0xFFB3261E);
 const display = TextStyle(fontFamily: 'Nohemi', fontWeight: FontWeight.w500, height: 1.1);
+const soft = Cubic(0.22, 1, 0.36, 1);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -68,6 +69,63 @@ class VelioGuestApp extends StatelessWidget {
         ),
       ),
       home: EnterCodeScreen(api: api, store: store),
+    );
+  }
+}
+
+List<Widget> staggered(List<Widget> children) => [
+  for (final (index, child) in children.indexed) Rise(delay: Duration(milliseconds: 60 * index.clamp(0, 4)), child: child),
+];
+
+class Rise extends StatelessWidget {
+  const Rise({super.key, this.delay = Duration.zero, required this.child});
+
+  final Duration delay;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final total = delay + const Duration(milliseconds: 700);
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: total,
+      curve: Interval(delay.inMilliseconds / total.inMilliseconds, 1, curve: soft),
+      builder: (context, t, child) => Opacity(
+        opacity: t,
+        child: Transform.translate(offset: Offset(0, 24 * (1 - t)), child: child),
+      ),
+      child: child,
+    );
+  }
+}
+
+class PressScale extends StatefulWidget {
+  const PressScale({super.key, this.scale = 0.95, required this.child});
+
+  final double scale;
+  final Widget child;
+
+  @override
+  State<PressScale> createState() => _PressScaleState();
+}
+
+class _PressScaleState extends State<PressScale> {
+  bool _down = false;
+
+  void _press(bool down) => setState(() => _down = down);
+
+  @override
+  Widget build(BuildContext context) {
+    return Listener(
+      onPointerDown: (_) => _press(true),
+      onPointerUp: (_) => _press(false),
+      onPointerCancel: (_) => _press(false),
+      child: AnimatedScale(
+        scale: _down ? widget.scale : 1,
+        duration: const Duration(milliseconds: 300),
+        curve: soft,
+        child: widget.child,
+      ),
     );
   }
 }

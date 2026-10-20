@@ -136,7 +136,7 @@ class _InviteScreenState extends State<InviteScreen> {
                 onRefresh: _load,
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-                  children: [
+                  children: staggered([
                     if (_offline) _OfflineBanner(onRetry: _load),
                     Text(invite.activity.title, style: display.copyWith(fontSize: 30)),
                     const SizedBox(height: 16),
@@ -156,7 +156,7 @@ class _InviteScreenState extends State<InviteScreen> {
                     _InvitedBy(invite: invite),
                     const SizedBox(height: 24),
                     _claimPanel(invite),
-                  ],
+                  ]),
                 ),
               ),
       ),
