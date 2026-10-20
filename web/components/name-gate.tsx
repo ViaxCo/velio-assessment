@@ -58,8 +58,41 @@ export function NameGate({ children }: { children: ReactNode }) {
         <p className="text-xl/[30px] font-medium text-ink/80">Tell us your name so your friends know who’s coming.</p>
         <Card>
           <NameForm cta="Continue" onSubmit={saveName} />
+          <RememberedPeople />
         </Card>
       </div>
     </>
+  );
+}
+
+function RememberedPeople() {
+  const { people, switchPerson } = useIdentity();
+  const [switchFailed, setSwitchFailed] = useState(false);
+
+  if (people.length === 0) return null;
+
+  return (
+    <div className="mt-6 space-y-3 border-t border-line pt-5">
+      <p className="text-sm font-medium">Or continue as</p>
+      <div className="flex flex-wrap gap-2">
+        {people.map((person) => (
+          <button
+            key={person.id}
+            onClick={async () => {
+              setSwitchFailed(false);
+              try {
+                await switchPerson(person.id);
+              } catch {
+                setSwitchFailed(true);
+              }
+            }}
+            className="min-h-10 rounded-full bg-canvas px-4 text-sm font-medium transition-all duration-300 hover:bg-ink/10 active:scale-95"
+          >
+            {person.name}
+          </button>
+        ))}
+      </div>
+      {switchFailed && <Notice tone="error" title="We couldn't switch. Try again." />}
+    </div>
   );
 }
