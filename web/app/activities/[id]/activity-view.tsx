@@ -6,7 +6,7 @@ import { useEffect, useRef } from "react";
 import { Attendees } from "@/components/attendees";
 import { InvitePanel } from "@/components/invite-panel";
 import { NameGate } from "@/components/name-gate";
-import { Button, Card, Notice, Skeleton, SpotsBadge } from "@/components/ui";
+import { Button, Card, Detail, Notice, Skeleton, SpotsBadge } from "@/components/ui";
 import { api, ApiError, type ActivityDetail } from "@/lib/api";
 import { formatDate, formatPrice } from "@/lib/format";
 import { useIdentity } from "@/lib/identity";
@@ -83,14 +83,14 @@ function Activity({ id }: { id: string }) {
   return (
     <div className="space-y-4">
       <Card className="space-y-3">
-        <div className="flex items-start justify-between gap-3">
-          <h1 className="text-2xl font-bold tracking-tight">{data.title}</h1>
-          <SpotsBadge activity={data} />
+        <h1 className="text-[32px] sm:text-4xl">{data.title}</h1>
+        <div className="space-y-2">
+          <Detail icon="calendar">{formatDate(data.startsAt)}</Detail>
+          <Detail icon="ticket">{formatPrice(data.priceMinor, data.currency)}</Detail>
+          <Detail icon="host">Hosted by {isHost ? "you" : data.hostName}</Detail>
         </div>
-        <p className="text-sm text-muted">
-          {formatDate(data.startsAt)} · {formatPrice(data.priceMinor, data.currency)} · Hosted by {isHost ? "you" : data.hostName}
-        </p>
-        {data.description && <p className="leading-relaxed">{data.description}</p>}
+        <SpotsBadge activity={data} />
+        {data.description && <p className="leading-relaxed text-ink/80">{data.description}</p>}
       </Card>
 
       {!isHost && !myBooking && (
@@ -128,7 +128,7 @@ function Activity({ id }: { id: string }) {
       {(isHost || myBooking) && (
         <Card className="space-y-3">
           <div className="flex items-baseline justify-between">
-            <h2 className="text-lg font-semibold">Who’s going</h2>
+            <h2 className="text-xl">Who’s going</h2>
             <span className="text-sm text-muted">
               {data.spotsTaken} of {data.capacity}
             </span>

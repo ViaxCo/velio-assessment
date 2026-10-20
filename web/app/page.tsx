@@ -27,7 +27,7 @@ function Activities() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold tracking-tight">{isHost ? "Your activities" : "Happening soon"}</h1>
+      <h1 className="pb-2 pt-4 text-[40px] sm:text-5xl">{isHost ? "Your activities" : "Happening soon"}</h1>
       {isHost && <CreateActivityForm />}
       {activities.isPending && [1, 2, 3].map((key) => <Skeleton key={key} className="h-24" />)}
       {activities.isError && (

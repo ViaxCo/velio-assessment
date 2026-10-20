@@ -54,8 +54,8 @@ export function NameGate({ children }: { children: ReactNode }) {
   return (
     <Card className="mx-auto mt-8 max-w-md space-y-4">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Do more things, with more people.</h1>
-        <p className="mt-1 text-muted">Tell us your name so your friends know who’s coming.</p>
+        <h1 className="text-[32px]">Do more things, with more people.</h1>
+        <p className="mt-3 font-medium text-ink/80">Tell us your name so your friends know who’s coming.</p>
       </div>
       <NameForm cta="Continue" onSubmit={saveName} />
     </Card>

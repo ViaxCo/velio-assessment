@@ -21,7 +21,7 @@ export default function StatsPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Tracking</h1>
+        <h1 className="pb-2 pt-4 text-[40px] sm:text-5xl">Tracking</h1>
         <p className="text-sm text-muted">
           Updates every 5 seconds. Raw counters at{" "}
           <a className="underline" href={`${API_URL}/metrics`}>
@@ -82,14 +82,14 @@ export default function StatsPage() {
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <Card>
-      <h2 className="mb-2 text-lg font-semibold">{title}</h2>
+      <h2 className="mb-2 text-xl">{title}</h2>
       <div className="divide-y divide-line">{children}</div>
     </Card>
   );
 }
 
 function Row({ label, hint, status, children }: { label: string; hint: string; status?: boolean | null; children: ReactNode }) {
-  const dot = status === undefined ? null : status === null ? "bg-line" : status ? "bg-lagoon" : "bg-sunset";
+  const dot = status === undefined ? null : status === null ? "bg-ink/20" : status ? "bg-lime" : "bg-alert";
   return (
     <div className="flex items-center justify-between gap-4 py-3">
       <div className="min-w-0">
@@ -99,7 +99,7 @@ function Row({ label, hint, status, children }: { label: string; hint: string; s
         </p>
         <p className="text-xs text-muted">{hint}</p>
       </div>
-      <p className="shrink-0 text-lg font-semibold tabular-nums">{children}</p>
+      <p className="shrink-0 font-display text-xl font-semibold tabular-nums">{children}</p>
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { NameForm } from "@/components/name-gate";
-import { Button, Card, Notice, Skeleton, SpotsBadge } from "@/components/ui";
+import { Button, Card, Detail, Notice, Skeleton, SpotsBadge } from "@/components/ui";
 import { api, ApiError, type InviteDetail } from "@/lib/api";
 import { formatDate, formatPrice } from "@/lib/format";
 import { useIdentity } from "@/lib/identity";
@@ -48,23 +48,29 @@ function Invite({ invite }: { invite: InviteDetail }) {
     api.track({ name: "invite_opened", code: invite.code, actorId: userId });
   }, [invite.code, userId]);
 
-  const headline =
-    invite.rail === "vouch"
-      ? `${invite.inviterName} vouched for you${invite.recipient ? `, ${invite.recipient}` : ""}`
-      : `${invite.inviterName} invited you`;
+  const vouch = invite.rail === "vouch";
 
   return (
     <div className="mx-auto max-w-md space-y-4">
-      <p className="pt-2 text-center text-sm font-medium text-sunset">{headline}</p>
-      <Card className="space-y-3">
-        <div className="flex items-start justify-between gap-3">
-          <h1 className="text-2xl font-bold tracking-tight">{activity.title}</h1>
-          <SpotsBadge activity={activity} />
+      <Card className="space-y-4">
+        <h1 className="text-[32px]">{activity.title}</h1>
+        <div className="space-y-2">
+          <Detail icon="calendar">{formatDate(activity.startsAt)}</Detail>
+          <Detail icon="ticket">{formatPrice(activity.priceMinor, activity.currency)}</Detail>
         </div>
-        <p className="text-sm text-muted">
-          {formatDate(activity.startsAt)} · {formatPrice(activity.priceMinor, activity.currency)}
-        </p>
-        {activity.description && <p className="leading-relaxed">{activity.description}</p>}
+        <SpotsBadge activity={activity} />
+        {activity.description && <p className="leading-relaxed text-ink/80">{activity.description}</p>}
+        <div className="flex items-center gap-3 rounded-2xl bg-canvas p-3">
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-ink font-display font-bold text-lime">
+            {invite.inviterName.slice(0, 1).toUpperCase()}
+          </span>
+          <div className="min-w-0">
+            <p className="font-bold">{vouch ? `${invite.inviterName} vouched for you` : `${invite.inviterName} invited you`}</p>
+            <p className="text-sm text-muted">
+              {vouch ? `Personal invite${invite.recipient ? ` for ${invite.recipient}` : ""}` : "Shared link"}
+            </p>
+          </div>
+        </div>
       </Card>
 
       <Card className="space-y-3">

@@ -12,7 +12,7 @@ export function Attendees({ attendees, highlightPlanId }: { attendees: Attendee[
       {[...plans].map(([planId, members]) => (
         <li
           key={planId}
-          className={`rounded-2xl border p-3 ${planId === highlightPlanId ? "border-lagoon bg-lagoon-soft" : "border-line"}`}
+          className={`rounded-2xl p-3 ${planId === highlightPlanId ? "bg-lime-soft" : "bg-canvas"}`}
         >
           <p className="text-xs font-medium text-muted">
             {planId === highlightPlanId ? "Your plan" : "Plan"} · {members.length} {members.length === 1 ? "person" : "people"}

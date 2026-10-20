@@ -9,12 +9,12 @@ export function ActivityCard({ activity, showAttendance }: { activity: Activity;
   return (
     <Link
       href={`/activities/${activity.id}`}
-      className="block rounded-3xl border border-line bg-card p-5 transition hover:border-ink/30 active:scale-[0.99]"
+      className="block rounded-[28px] bg-card p-5 ring-1 ring-transparent transition hover:ring-ink/15 active:scale-[0.99] sm:p-6"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h2 className="truncate text-lg font-semibold">{activity.title}</h2>
-          <p className="mt-0.5 text-sm text-muted">
+          <h2 className="text-xl">{activity.title}</h2>
+          <p className="mt-1.5 text-sm font-medium text-muted">
             {formatDate(activity.startsAt)} · {formatPrice(activity.priceMinor, activity.currency)}
           </p>
         </div>
@@ -22,8 +22,8 @@ export function ActivityCard({ activity, showAttendance }: { activity: Activity;
       </div>
       {showAttendance && (
         <div className="mt-4">
-          <div className="h-2 overflow-hidden rounded-full bg-line/60">
-            <div className="h-full rounded-full bg-lagoon transition-[width] duration-500" style={{ width: `${filled}%` }} />
+          <div className="h-2 overflow-hidden rounded-full bg-ink/10">
+            <div className="h-full rounded-full bg-lime transition-[width] duration-500" style={{ width: `${filled}%` }} />
           </div>
           <p className="mt-1.5 text-xs text-muted">
             {activity.spotsTaken} of {activity.capacity} booked

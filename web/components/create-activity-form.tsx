@@ -45,7 +45,7 @@ export function CreateActivityForm() {
           create.mutate(new FormData(event.currentTarget));
         }}
       >
-        <h2 className="text-lg font-semibold">New activity</h2>
+        <h2 className="text-xl">New activity</h2>
         <input name="title" placeholder="Sunset Kayaking" className={inputClass} required minLength={3} maxLength={80} />
         <textarea name="description" placeholder="What should people expect?" className={inputClass} rows={3} maxLength={1000} />
         <div className="grid grid-cols-2 gap-3">
@@ -64,7 +64,7 @@ export function CreateActivityForm() {
         </label>
         {create.error && <Notice tone="error" title="We couldn't create this activity">{create.error.message}</Notice>}
         <div className="flex gap-3">
-          <Button type="button" onClick={() => setOpen(false)} className="flex-1 bg-transparent !text-ink ring-1 ring-line">
+          <Button type="button" onClick={() => setOpen(false)} className="flex-1 !bg-transparent ring-1 ring-ink/15">
             Cancel
           </Button>
           <Button type="submit" disabled={create.isPending} className="flex-1">

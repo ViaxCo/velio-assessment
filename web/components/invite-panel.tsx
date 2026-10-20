@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { api, type Invite, type Rail } from "@/lib/api";
 import { useIdentity } from "@/lib/identity";
-import { Button, Card, inputClass, Notice } from "./ui";
+import { Button, inputClass, Notice } from "./ui";
 
 export function InvitePanel({ activityId, title }: { activityId: string; title: string }) {
   const { user } = useIdentity();
@@ -22,10 +22,10 @@ export function InvitePanel({ activityId, title }: { activityId: string; title: 
   if (!user?.invitesEnabled) return null;
 
   return (
-    <Card className="space-y-4">
+    <section className="space-y-4 rounded-[28px] bg-forest p-5 text-white sm:p-6">
       <div>
-        <h2 className="text-lg font-semibold">Bring your people</h2>
-        <p className="text-sm text-muted">Plans happen when friends come too.</p>
+        <h2 className="text-2xl">Bring your people</h2>
+        <p className="mt-1 text-white/75">Plans happen when friends come too.</p>
       </div>
 
       <form
@@ -35,10 +35,10 @@ export function InvitePanel({ activityId, title }: { activityId: string; title: 
           create.mutate({ rail: "vouch", recipient: recipient.trim() });
         }}
       >
-        <label htmlFor="recipient" className="block text-sm font-medium">
+        <label htmlFor="recipient" className="block font-bold">
           Vouch for a friend
         </label>
-        <p className="text-xs text-muted">A vouch says you stand behind them. Each vouch link works once.</p>
+        <p className="text-sm text-white/75">A vouch says you stand behind them. Each vouch link works once.</p>
         <div className="flex gap-2">
           <input
             id="recipient"
@@ -55,15 +55,15 @@ export function InvitePanel({ activityId, title }: { activityId: string; title: 
         </div>
       </form>
 
-      <div className="flex items-center justify-between gap-3 border-t border-line pt-4">
+      <div className="flex items-center justify-between gap-3 border-t border-white/15 pt-4">
         <div>
-          <p className="text-sm font-medium">Share a public link</p>
-          <p className="text-xs text-muted">Anyone with the link can join. Good for group chats.</p>
+          <p className="font-bold">Share a public link</p>
+          <p className="text-sm text-white/75">Anyone with the link can join. Good for group chats.</p>
         </div>
         <Button
           onClick={() => create.mutate({ rail: "public" })}
           disabled={create.isPending}
-          className="shrink-0 bg-ink px-5"
+          className="shrink-0 !bg-white px-5"
         >
           Get link
         </Button>
@@ -74,7 +74,7 @@ export function InvitePanel({ activityId, title }: { activityId: string; title: 
       {invites.map((invite) => (
         <InviteLink key={invite.code} invite={invite} title={title} />
       ))}
-    </Card>
+    </section>
   );
 }
 
@@ -84,15 +84,15 @@ function InviteLink({ invite, title }: { invite: Invite; title: string }) {
   const text = `Join me at ${title} on Velio`;
 
   return (
-    <div className="rounded-2xl bg-canvas p-3">
+    <div className="rounded-2xl bg-white/10 p-3">
       <div className="flex items-center justify-between text-sm">
-        <span className="font-medium">{label}</span>
-        <span className="font-mono text-xs tracking-widest text-muted">{invite.code}</span>
+        <span className="font-bold">{label}</span>
+        <span className="font-mono text-xs tracking-widest text-lime">{invite.code}</span>
       </div>
       <div className="mt-2 flex gap-2">
         <input readOnly value={invite.url} className={`${inputClass} py-2 text-sm`} onFocus={(event) => event.target.select()} />
         <Button
-          className="min-h-10 shrink-0 bg-ink px-4 text-sm"
+          className="min-h-10 shrink-0 px-4 text-sm"
           onClick={async () => {
             if (navigator.share) {
               await navigator.share({ title, text, url: invite.url }).catch(() => undefined);
