@@ -27,15 +27,17 @@ export default function StatsPage() {
         </p>
       </div>
 
-      {stats.isPending ? (
-        <Skeleton className="h-96" />
-      ) : stats.isError ? (
-        <Notice tone="error" title="We couldn't load the tracking data">
-          {stats.error.message}
-        </Notice>
-      ) : (
-        <Sections stats={stats.data} />
-      )}
+      <div className="space-y-4">
+        {stats.isPending ? (
+          <Skeleton className="h-96" />
+        ) : stats.isError ? (
+          <Notice tone="error" title="We couldn't load the tracking data">
+            {stats.error.message}
+          </Notice>
+        ) : (
+          <Sections stats={stats.data} />
+        )}
+      </div>
     </div>
   );
 }
