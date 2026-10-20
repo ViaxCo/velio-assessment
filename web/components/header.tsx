@@ -33,8 +33,7 @@ export function Header() {
     };
   }, [menuOpen]);
 
-  const chooseRole = (next: Role) => {
-    setRole(next);
+  const goHome = () => {
     if (window.location.pathname !== "/") router.push("/");
   };
 
@@ -58,7 +57,10 @@ export function Header() {
                   key={value}
                   role="radio"
                   aria-checked={role === value}
-                  onClick={() => chooseRole(value)}
+                  onClick={() => {
+                    setRole(value);
+                    goHome();
+                  }}
                   className={`relative h-9 rounded-full px-3 text-sm font-medium tracking-tight transition-colors duration-300 ${
                     role === value ? "text-ink" : "text-muted hover:text-ink"
                   }`}
@@ -104,6 +106,7 @@ export function Header() {
                   onClick={() => {
                     setMenuOpen(false);
                     switchPerson();
+                    goHome();
                   }}
                   className="w-full rounded-2xl px-3 py-2 text-left transition-colors duration-200 hover:bg-canvas"
                 >
