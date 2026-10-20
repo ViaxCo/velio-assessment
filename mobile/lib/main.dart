@@ -4,12 +4,12 @@ import 'api.dart';
 import 'enter_code_screen.dart';
 import 'store.dart';
 
-const ink = Color(0xFF111111);
-const muted = Color(0xFF6E6E73);
-const canvas = Color(0xFFF2F2F4);
+const ink = Color(0xFF173600);
+const muted = Color(0x80173600);
+const canvas = Color(0xFFF5F3EC);
 const lime = Color(0xFF97E565);
 const alert = Color(0xFFB3261E);
-const display = TextStyle(fontFamily: 'Nohemi', fontWeight: FontWeight.w700, height: 1.1);
+const display = TextStyle(fontFamily: 'Nohemi', fontWeight: FontWeight.w500, height: 1.1);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,7 +46,7 @@ class VelioGuestApp extends StatelessWidget {
           elevation: 0,
           clipBehavior: Clip.antiAlias,
           margin: const EdgeInsets.only(bottom: 8),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
         ),
         filledButtonTheme: FilledButtonThemeData(
           style: FilledButton.styleFrom(
@@ -55,7 +55,7 @@ class VelioGuestApp extends StatelessWidget {
             foregroundColor: ink,
             disabledBackgroundColor: lime.withValues(alpha: 0.4),
             disabledForegroundColor: ink.withValues(alpha: 0.4),
-            textStyle: const TextStyle(fontFamily: 'Satoshi', fontSize: 16, fontWeight: FontWeight.w700),
+            textStyle: const TextStyle(fontFamily: 'Satoshi', fontSize: 16, fontWeight: FontWeight.w500),
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
