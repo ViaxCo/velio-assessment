@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Nohemi Fallback";
+  src: local("Arial");
+  size-adjust: 106%;
+  ascent-override: 69.8%;
+  descent-override: 17.9%;
+  line-gap-override: 7.1%;
+}
+
 @theme inline {
   --color-canvas: #f5f3ec;
   --color-card: #ffffff;

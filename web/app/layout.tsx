@@ -5,7 +5,13 @@ import { Providers } from "./providers";
 import "./globals.css";
 
 const satoshi = localFont({ src: "./fonts/Satoshi-Variable.woff2", weight: "300 900", variable: "--font-satoshi" });
-const nohemi = localFont({ src: "./fonts/Nohemi-Medium.ttf", weight: "500", variable: "--font-nohemi" });
+const nohemi = localFont({
+  src: "./fonts/Nohemi-Medium.ttf",
+  weight: "500",
+  variable: "--font-nohemi",
+  adjustFontFallback: false,
+  fallback: ["Nohemi Fallback"],
+});
 
 export const metadata: Metadata = {
   title: "Velio",
