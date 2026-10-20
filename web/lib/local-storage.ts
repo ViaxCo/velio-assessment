@@ -11,12 +11,12 @@ function subscribe(onChange: () => void) {
   };
 }
 
-export function useLocalStorage(key: string, createDefault: () => string) {
+export function useLocalStorage(key: string, createDefault?: () => string) {
   const value = useSyncExternalStore(
     subscribe,
     () => {
       const stored = localStorage.getItem(key);
-      if (stored) return stored;
+      if (stored || !createDefault) return stored;
       const fresh = createDefault();
       localStorage.setItem(key, fresh);
       return fresh;

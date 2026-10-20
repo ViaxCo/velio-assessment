@@ -11,21 +11,32 @@ function useIdentityState() {
   const queryClient = useQueryClient();
   const [userId, setUserId] = useLocalStorage("velio.userId", newId);
   const [role, setRole] = useLocalStorage("velio.role", () => "booker");
+  const [namedUserId, setNamedUserId] = useLocalStorage("velio.namedUserId");
 
   const user = useQuery({
     queryKey: ["user", userId],
-    queryFn: () => api.getUser(userId!).catch((error) => (error instanceof ApiError && error.status === 404 ? null : Promise.reject(error))),
+    queryFn: async () => {
+      try {
+        const found = await api.getUser(userId!);
+        setNamedUserId(found.id);
+        return found;
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 404) return null;
+        throw error;
+      }
+    },
     enabled: Boolean(userId),
   });
 
   return {
     userId,
     user: user.data,
-    isLoading: !userId || user.isPending,
+    isLoading: userId === namedUserId && user.isPending,
     role: (role ?? "booker") as Role,
     setRole: (next: Role) => setRole(next),
     async saveName(name: string) {
       queryClient.setQueryData(["user", userId], await api.saveUser(userId!, name));
+      setNamedUserId(userId);
     },
     switchPerson: () => setUserId(newId()),
   };

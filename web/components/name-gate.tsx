@@ -46,8 +46,9 @@ export function NameForm({ cta, onSubmit }: { cta: string; onSubmit: (name: stri
 }
 
 export function NameGate({ children }: { children: ReactNode }) {
-  const { user, isLoading, saveName } = useIdentity();
+  const { userId, user, isLoading, saveName } = useIdentity();
 
+  if (!userId) return null;
   if (isLoading) return <Skeleton className="h-48" />;
   if (user) return children;
 
