@@ -19,6 +19,7 @@ export function Header() {
   const queryClient = useQueryClient();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const accountRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -26,7 +27,9 @@ export function Header() {
       if (!menuRef.current?.contains(event.target as Node)) setMenuOpen(false);
     };
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
+      if (event.key !== "Escape") return;
+      setMenuOpen(false);
+      accountRef.current?.focus();
     };
     document.addEventListener("pointerdown", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
@@ -74,8 +77,8 @@ export function Header() {
             </div>
             <div ref={menuRef} className="relative">
               <button
+                ref={accountRef}
                 aria-label="Account"
-                aria-haspopup="menu"
                 aria-expanded={menuOpen}
                 onClick={() => setMenuOpen((open) => !open)}
                 className="flex size-11 items-center justify-center rounded-full bg-lime transition-all duration-300 hover:bg-lime-hover active:scale-95"
@@ -85,7 +88,6 @@ export function Header() {
                 </span>
               </button>
               <div
-                role="menu"
                 className={`absolute right-0 mt-3 w-56 origin-top-right rounded-3xl border border-black/5 bg-white p-2 text-sm shadow-xs transition-all duration-200 ease-soft ${
                   menuOpen ? "scale-100 opacity-100" : "invisible -translate-y-1 scale-95 opacity-0"
                 }`}
@@ -97,7 +99,6 @@ export function Header() {
                   </p>
                 </div>
                 <Link
-                  role="menuitem"
                   href="/stats"
                   onPointerEnter={() => queryClient.prefetchQuery(statsQuery)}
                   onClick={() => setMenuOpen(false)}
@@ -113,8 +114,6 @@ export function Header() {
                       return (
                         <button
                           key={person.id}
-                          role="menuitemradio"
-                          aria-checked={current}
                           disabled={current}
                           onClick={() => {
                             setMenuOpen(false);
@@ -130,7 +129,6 @@ export function Header() {
                     })}
                   </div>
                   <button
-                    role="menuitem"
                     onClick={() => {
                       setMenuOpen(false);
                       newPerson();
