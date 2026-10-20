@@ -53,9 +53,14 @@ export function createApp(db: Db, live: Live) {
     return activity;
   }
 
-  async function currentUser(req: Request): Promise<User> {
+  const userIdHeader = (req: Request) => {
     const id = req.header("x-user-id");
-    const user = id && uuid.safeParse(id).success ? await db("users").where({ id }).first() : undefined;
+    return id && uuid.safeParse(id).success ? id : null;
+  };
+
+  async function currentUser(req: Request): Promise<User> {
+    const id = userIdHeader(req);
+    const user = id ? await db("users").where({ id }).first() : undefined;
     if (!user) throw new AppError(401, "unknown_user", "Tell us your name first.");
     return user;
   }
@@ -81,8 +86,12 @@ export function createApp(db: Db, live: Live) {
     res.json(userView(user));
   });
 
-  app.get("/activities", async (_req, res) => {
-    res.json(await activities().where("starts_at", ">", db.fn.now()).orderBy("starts_at"));
+  app.get("/activities", async (req, res) => {
+    const booked = db.raw(
+      "exists (select 1 from bookings where bookings.activity_id = activities.id and bookings.user_id = ?) as booked",
+      [userIdHeader(req)],
+    );
+    res.json(await activities().select(booked).where("starts_at", ">", db.fn.now()).orderBy("starts_at"));
   });
 
   app.post("/activities", async (req, res) => {
@@ -126,12 +135,8 @@ export function createApp(db: Db, live: Live) {
 
   app.get("/invites/:code", async (req, res) => {
     const invite = await findInvite(db, req.params.code.toUpperCase());
-    const userId = req.header("x-user-id");
-    const joined = Boolean(
-      userId &&
-        uuid.safeParse(userId).success &&
-        (await db("bookings").where({ activity_id: invite.activityId, user_id: userId }).first()),
-    );
+    const userId = userIdHeader(req);
+    const joined = Boolean(userId && (await db("bookings").where({ activity_id: invite.activityId, user_id: userId }).first()));
     res.json({ ...invite, joined, activity: await findActivity(invite.activityId) });
   });
 

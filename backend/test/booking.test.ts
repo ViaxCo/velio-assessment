@@ -60,4 +60,20 @@ describe("booking the last spots", () => {
     const activity = await servers.db("activities").where({ id: activityId }).first();
     expect(activity.spotsTaken).toBe(1);
   });
+
+  it("marks the activities the caller booked", async () => {
+    const host = await servers.createUser("Host");
+    const activityId = await servers.createActivity(host, 5);
+    const booker = await servers.createUser("Booker");
+    const other = await servers.createUser("Other");
+    await servers.request(servers.urls[0], `/activities/${activityId}/bookings`, { method: "POST", userId: booker });
+
+    const bookedFor = async (userId?: string) => {
+      const { body } = await servers.request(servers.urls[0], "/activities", { userId });
+      return body.find((activity: { id: string }) => activity.id === activityId).booked;
+    };
+    expect(await bookedFor(booker)).toBe(true);
+    expect(await bookedFor(other)).toBe(false);
+    expect(await bookedFor()).toBe(false);
+  });
 });
