@@ -44,6 +44,7 @@ function useIdentityState() {
     },
     switchPerson: () => {
       remember(null);
+      setRole("booker");
       setUserId(newId());
     },
   };
