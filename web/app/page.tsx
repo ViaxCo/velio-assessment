@@ -36,7 +36,9 @@ function Activities() {
           ))}
         </>
       )}
-      <h1 className={`pb-2 text-4xl md:text-[44px] ${plans.length > 0 ? "pt-6" : ""}`}>{isHost ? "Your activities" : "Happening soon"}</h1>
+      {(isHost || !activities.isPending) && (
+        <h1 className={`pb-2 text-4xl md:text-[44px] ${plans.length > 0 ? "pt-6" : ""}`}>{isHost ? "Your activities" : "Happening soon"}</h1>
+      )}
       {isHost && <CreateActivityForm />}
       {activities.isPending && [1, 2, 3].map((key) => <Skeleton key={key} className="h-24" />)}
       {activities.isError && (
