@@ -4,10 +4,12 @@ import 'api.dart';
 import 'enter_code_screen.dart';
 import 'store.dart';
 
-const sunset = Color(0xFFE8552D);
-const lagoon = Color(0xFF0F766E);
-const canvas = Color(0xFFFBF8F4);
-const muted = Color(0xFF78716C);
+const ink = Color(0xFF111111);
+const muted = Color(0xFF6E6E73);
+const canvas = Color(0xFFF2F2F4);
+const lime = Color(0xFF97E565);
+const alert = Color(0xFFB3261E);
+const display = TextStyle(fontFamily: 'Nohemi', fontWeight: FontWeight.w700, height: 1.1);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,22 +25,46 @@ class VelioGuestApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    InputBorder field(BorderSide side) => OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: side);
     return MaterialApp(
       title: 'Velio',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: sunset, primary: sunset, surface: canvas),
+        fontFamily: 'Satoshi',
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: lime,
+          primary: lime,
+          onPrimary: ink,
+          surface: canvas,
+          onSurface: ink,
+          error: alert,
+        ),
         scaffoldBackgroundColor: canvas,
+        appBarTheme: const AppBarTheme(backgroundColor: canvas, surfaceTintColor: Colors.transparent, scrolledUnderElevation: 0),
+        cardTheme: CardThemeData(
+          color: Colors.white,
+          elevation: 0,
+          clipBehavior: Clip.antiAlias,
+          margin: const EdgeInsets.only(bottom: 8),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
         filledButtonTheme: FilledButtonThemeData(
           style: FilledButton.styleFrom(
-            minimumSize: const Size.fromHeight(52),
-            textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            minimumSize: const Size.fromHeight(56),
+            backgroundColor: lime,
+            foregroundColor: ink,
+            disabledBackgroundColor: lime.withValues(alpha: 0.4),
+            disabledForegroundColor: ink.withValues(alpha: 0.4),
+            textStyle: const TextStyle(fontFamily: 'Satoshi', fontSize: 16, fontWeight: FontWeight.w700),
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: Colors.white,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+          enabledBorder: field(BorderSide.none),
+          focusedBorder: field(const BorderSide(color: ink, width: 1.5)),
+          errorBorder: field(const BorderSide(color: alert)),
+          focusedErrorBorder: field(const BorderSide(color: alert, width: 1.5)),
         ),
       ),
       home: EnterCodeScreen(api: api, store: store),

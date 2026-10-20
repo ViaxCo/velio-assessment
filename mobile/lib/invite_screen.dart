@@ -126,7 +126,7 @@ class _InviteScreenState extends State<InviteScreen> {
   Widget build(BuildContext context) {
     final invite = _invite;
     return Scaffold(
-      appBar: AppBar(backgroundColor: canvas, surfaceTintColor: Colors.transparent),
+      appBar: AppBar(),
       body: SafeArea(
         child: invite == null
             ? _loadError == null
@@ -135,13 +135,26 @@ class _InviteScreenState extends State<InviteScreen> {
             : RefreshIndicator(
                 onRefresh: _load,
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
                   children: [
                     if (_offline) _OfflineBanner(onRetry: _load),
-                    _Headline(invite: invite),
+                    Text(invite.activity.title, style: display.copyWith(fontSize: 30)),
                     const SizedBox(height: 16),
-                    _ActivityCard(activity: invite.activity),
+                    _Detail(icon: Icons.calendar_today_outlined, text: formatDate(invite.activity.startsAt)),
+                    const SizedBox(height: 10),
+                    _Detail(
+                      icon: Icons.confirmation_number_outlined,
+                      text: formatPrice(invite.activity.priceMinor, invite.activity.currency),
+                    ),
                     const SizedBox(height: 16),
+                    Align(alignment: Alignment.centerLeft, child: _SpotsPill(spotsLeft: invite.activity.spotsLeft)),
+                    if (invite.activity.description.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      Text(invite.activity.description, style: const TextStyle(color: muted, fontSize: 16, height: 1.45)),
+                    ],
+                    const SizedBox(height: 20),
+                    _InvitedBy(invite: invite),
+                    const SizedBox(height: 24),
                     _claimPanel(invite),
                   ],
                 ),
@@ -154,7 +167,7 @@ class _InviteScreenState extends State<InviteScreen> {
     final activity = invite.activity;
     if (invite.joined) {
       return _Notice(
-        color: lagoon,
+        color: lime,
         icon: Icons.check_circle,
         title: 'You’re in the plan!',
         body: '${invite.inviterName} will see you’ve joined. See you on ${formatDate(activity.startsAt)}.',
@@ -162,7 +175,7 @@ class _InviteScreenState extends State<InviteScreen> {
     }
     if (_claimError?.code == 'sold_out') {
       return _Notice(
-        color: sunset,
+        color: alert,
         icon: Icons.sentiment_dissatisfied,
         title: 'So close. The last spot just went.',
         body: 'We didn’t book you. Ask ${invite.inviterName} what’s next.',
@@ -192,7 +205,7 @@ class _InviteScreenState extends State<InviteScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (_claimError != null) ...[
-          _Notice(color: sunset, icon: Icons.error_outline, title: 'We couldn’t claim your spot', body: _claimError!.message),
+          _Notice(color: alert, icon: Icons.error_outline, title: 'We couldn’t claim your spot', body: _claimError!.message),
           const SizedBox(height: 12),
         ],
         TextField(
@@ -208,7 +221,7 @@ class _InviteScreenState extends State<InviteScreen> {
         FilledButton(
           onPressed: _claiming || _name.text.trim().isEmpty ? null : _claim,
           child: _claiming
-              ? const SizedBox.square(dimension: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white))
+              ? const SizedBox.square(dimension: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: ink))
               : Text('Claim my spot · ${formatPrice(activity.priceMinor, activity.currency)}'),
         ),
         const SizedBox(height: 8),
@@ -218,68 +231,20 @@ class _InviteScreenState extends State<InviteScreen> {
   }
 }
 
-class _Headline extends StatelessWidget {
-  const _Headline({required this.invite});
+class _Detail extends StatelessWidget {
+  const _Detail({required this.icon, required this.text});
 
-  final Invite invite;
+  final IconData icon;
+  final String text;
 
   @override
   Widget build(BuildContext context) {
-    final recipient = invite.recipient == null ? '' : ', ${invite.recipient}';
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        Text(
-          invite.isVouch ? '${invite.inviterName} vouched for you$recipient' : '${invite.inviterName} invited you',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
-        ),
-        if (invite.isVouch) ...[
-          const SizedBox(height: 4),
-          const Text('A vouch means they stand behind you.', style: TextStyle(color: muted)),
-        ],
+        Icon(icon, size: 20, color: muted),
+        const SizedBox(width: 10),
+        Expanded(child: Text(text, style: const TextStyle(color: muted, fontSize: 16, fontWeight: FontWeight.w500))),
       ],
-    );
-  }
-}
-
-class _ActivityCard extends StatelessWidget {
-  const _ActivityCard({required this.activity});
-
-  final Activity activity;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE7E1D9)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text(activity.title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
-              ),
-              const SizedBox(width: 12),
-              _SpotsPill(spotsLeft: activity.spotsLeft),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(
-            '${formatDate(activity.startsAt)} · ${formatPrice(activity.priceMinor, activity.currency)}',
-            style: const TextStyle(color: muted),
-          ),
-          if (activity.description.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Text(activity.description, style: const TextStyle(height: 1.4)),
-          ],
-        ],
-      ),
     );
   }
 }
@@ -291,16 +256,66 @@ class _SpotsPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = spotsLeft == 0 ? muted : spotsLeft <= 3 ? sunset : lagoon;
+    final color = spotsLeft == 0 ? muted : spotsLeft <= 3 ? alert : lime;
     final label = spotsLeft == 0 ? 'Full' : spotsLeft == 1 ? 'Last spot' : '$spotsLeft spots left';
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 250),
       transitionBuilder: (child, animation) => ScaleTransition(scale: animation, child: child),
       child: Container(
         key: ValueKey(label),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(99)),
-        child: Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 12)),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(99)),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+            const SizedBox(width: 8),
+            Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _InvitedBy extends StatelessWidget {
+  const _InvitedBy({required this.invite});
+
+  final Invite invite;
+
+  @override
+  Widget build(BuildContext context) {
+    final recipient = invite.recipient == null ? '' : ', ${invite.recipient}';
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            alignment: Alignment.center,
+            decoration: const BoxDecoration(color: lime, shape: BoxShape.circle),
+            child: Text(invite.inviterName.substring(0, 1).toUpperCase(), style: display.copyWith(fontSize: 18)),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  invite.isVouch ? '${invite.inviterName} vouched for you$recipient' : '${invite.inviterName} invited you',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  invite.isVouch ? 'A vouch means they stand behind you.' : 'Anyone with this link can join.',
+                  style: const TextStyle(color: muted, fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -318,7 +333,7 @@ class _Notice extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -328,7 +343,7 @@ class _Notice extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+                Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
                 if (body != null) ...[const SizedBox(height: 4), Text(body!, style: const TextStyle(color: muted))],
               ],
             ),
@@ -349,13 +364,13 @@ class _OfflineBanner extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Material(
-        color: const Color(0xFFE7E1D9),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         child: ListTile(
-          leading: const Icon(Icons.cloud_off),
-          title: const Text('You’re offline'),
-          subtitle: const Text('Showing details saved on this phone.'),
-          trailing: TextButton(onPressed: onRetry, child: const Text('Retry')),
+          leading: const Icon(Icons.cloud_off, color: muted),
+          title: const Text('You’re offline', style: TextStyle(fontWeight: FontWeight.w700)),
+          subtitle: const Text('Showing details saved on this phone.', style: TextStyle(color: muted)),
+          trailing: TextButton(onPressed: onRetry, style: TextButton.styleFrom(foregroundColor: ink), child: const Text('Retry')),
         ),
       ),
     );
@@ -370,7 +385,7 @@ class _Loading extends StatelessWidget {
     Widget block(double height) => Container(
       height: height,
       margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(color: const Color(0xFFE7E1D9), borderRadius: BorderRadius.circular(24)),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
     );
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -394,7 +409,7 @@ class _LoadFailed extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _Notice(
-            color: sunset,
+            color: alert,
             icon: notFound ? Icons.search_off : Icons.cloud_off,
             title: notFound ? 'We couldn’t find that invite' : 'We couldn’t load this invite',
             body: notFound ? 'Check the code with the friend who sent it.' : error.message,

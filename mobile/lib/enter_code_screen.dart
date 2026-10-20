@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'api.dart';
 import 'invite_screen.dart';
@@ -64,14 +65,11 @@ class _EnterCodeScreenState extends State<EnterCodeScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
           children: [
-            const Text(
-              'velio',
-              style: TextStyle(color: sunset, fontSize: 22, fontWeight: FontWeight.w800),
-            ),
-            const SizedBox(height: 32),
-            Text('Got an invite?', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w700)),
-            const SizedBox(height: 8),
-            const Text('Enter the code or paste the link your friend sent you.', style: TextStyle(color: muted, fontSize: 16)),
+            Align(alignment: Alignment.centerLeft, child: SvgPicture.asset('assets/logo.svg', height: 28)),
+            const SizedBox(height: 40),
+            Text('Got an invite?', style: display.copyWith(fontSize: 34)),
+            const SizedBox(height: 10),
+            const Text('Enter the code or paste the link your friend sent you.', style: TextStyle(color: muted, fontSize: 16, height: 1.4)),
             const SizedBox(height: 24),
             TextField(
               controller: _controller,
@@ -80,22 +78,23 @@ class _EnterCodeScreenState extends State<EnterCodeScreen> {
               autocorrect: false,
               textInputAction: TextInputAction.go,
               onSubmitted: (_) => _submit(),
-              style: const TextStyle(fontSize: 20, letterSpacing: 2, fontWeight: FontWeight.w600),
+              style: const TextStyle(fontSize: 20, letterSpacing: 2, fontWeight: FontWeight.w700),
               decoration: InputDecoration(hintText: 'K7QM2XPA', errorText: _error, errorMaxLines: 2),
             ),
             const SizedBox(height: 16),
             FilledButton(onPressed: _submit, child: const Text('Open invite')),
             if (recent.isNotEmpty) ...[
               const SizedBox(height: 40),
-              const Text('Recent invites', style: TextStyle(fontWeight: FontWeight.w600)),
-              const SizedBox(height: 8),
+              Text('Recent invites', style: display.copyWith(fontSize: 20)),
+              const SizedBox(height: 12),
               for (final invite in recent)
                 Card(
-                  elevation: 0,
-                  color: Colors.white,
                   child: ListTile(
-                    title: Text(invite.activity.title),
-                    subtitle: Text('From ${invite.inviterName}${invite.joined ? ' · You’re in' : ''}'),
+                    title: Text(invite.activity.title, style: const TextStyle(fontWeight: FontWeight.w700)),
+                    subtitle: Text(
+                      'From ${invite.inviterName}${invite.joined ? ' · You’re in' : ''}',
+                      style: const TextStyle(color: muted),
+                    ),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => _open(invite.code),
                   ),
