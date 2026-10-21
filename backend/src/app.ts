@@ -3,7 +3,7 @@ import express, { type ErrorRequestHandler, type Request } from "express";
 import { z } from "zod";
 import type { Db } from "./db.ts";
 import { AppError } from "./errors.ts";
-import { createInvite, findInvite } from "./invites.ts";
+import { createInvite, findInvite, listInvites } from "./invites.ts";
 import type { Live } from "./live.ts";
 import { registry } from "./metrics.ts";
 import { bookSpot, claimSpot } from "./spots.ts";
@@ -131,6 +131,11 @@ export function createApp(db: Db, live: Live) {
     const user = await currentUser(req);
     const invite = await createInvite(db, user, parse(uuid, req.params.id), parse(newInvite, req.body));
     res.status(201).json(invite);
+  });
+
+  app.get("/activities/:id/invites", async (req, res) => {
+    const user = await currentUser(req);
+    res.json(await listInvites(db, user, parse(uuid, req.params.id)));
   });
 
   app.get("/invites/:code", async (req, res) => {

@@ -67,6 +67,27 @@ describe("invites and attribution", () => {
     expect(await servers.db("events").where({ name: "invite_created", activity_id: activityId, rail: "public" })).toHaveLength(1);
   });
 
+  it("lists only my invites for an activity, newest first, with claimed vouches marked used", async () => {
+    const host = await servers.createUser("Host");
+    const activityId = await servers.createActivity(host, 10);
+    const other = await servers.createUser("Other");
+    await book(activityId, other);
+    await invite(activityId, other, { rail: "vouch", recipient: "Not mine" });
+
+    const share = await invite(activityId, host, { rail: "public" });
+    const ada = await invite(activityId, host, { rail: "vouch", recipient: "Ada" });
+    const ike = await invite(activityId, host, { rail: "vouch", recipient: "Ike" });
+    await claim(ada.code, randomUUID());
+    await claim(share.code, randomUUID());
+
+    const { body } = await servers.request(url, `/activities/${activityId}/invites`, { userId: host });
+    expect(body).toEqual([
+      expect.objectContaining({ code: ike.code, recipient: "Ike", used: false, url: ike.url }),
+      expect.objectContaining({ code: ada.code, recipient: "Ada", used: true }),
+      expect.objectContaining({ code: share.code, rail: "public", used: false }),
+    ]);
+  });
+
   it("lets a vouch invite be claimed only once, even when claims race", async () => {
     const host = await servers.createUser("Host");
     const activityId = await servers.createActivity(host, 20);

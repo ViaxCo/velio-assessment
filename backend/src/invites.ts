@@ -6,6 +6,7 @@ import { invitesEnabled, type User } from "./users.ts";
 
 const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 const newCode = () => Array.from({ length: 8 }, () => CODE_ALPHABET[randomInt(CODE_ALPHABET.length)]).join("");
+const withUrl = <T extends { code: string }>(invite: T) => ({ ...invite, url: `${config.webUrl}/i/${invite.code}` });
 
 export async function createInvite(
   db: Db,
@@ -23,8 +24,6 @@ export async function createInvite(
   if (!booking && activity.hostId !== user.id) {
     throw new AppError(403, "not_in_activity", "Book a spot first, then invite your friends.");
   }
-
-  const withUrl = <T extends { code: string }>(invite: T) => ({ ...invite, url: `${config.webUrl}/i/${invite.code}` });
 
   if (rail === "public") {
     const existing = await db("invites").where({ inviter_id: user.id, activity_id: activityId, rail }).first();
@@ -51,6 +50,17 @@ export async function createInvite(
     });
     return withUrl(invite);
   });
+}
+
+export async function listInvites(db: Db, user: User, activityId: string) {
+  const invites = await db("invites")
+    .where({ inviter_id: user.id, activity_id: activityId })
+    .orderBy("created_at", "desc")
+    .select(
+      "invites.*",
+      db.raw("rail = 'vouch' and exists (select 1 from attributions where attributions.invite_id = invites.id) as used"),
+    );
+  return invites.map(withUrl);
 }
 
 export async function findInvite(db: Db, code: string) {
