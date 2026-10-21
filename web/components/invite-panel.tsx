@@ -45,7 +45,7 @@ export function InvitePanel({ activityId, title }: { activityId: string; title: 
           <input
             id="recipient"
             className={inputClass}
-            placeholder="Their name or number"
+            placeholder="Their name"
             value={recipient}
             onChange={(event) => setRecipient(event.target.value)}
             maxLength={80}
