@@ -143,7 +143,7 @@ The build follows `PLANS.md`. These are the places where it changed course, and 
 - **Guests can also claim on the web.** The brief puts the guest journey in Flutter only. An invite link opens in the phone's browser, and most first-time guests do not have the app, so the link needs a web page to land on. Flutter covers guests who have the app or a code. In the real product, the app would serve returning users in any role, and the web would be for first contact.
 - **Not built, as planned:** holds for vouched friends, the waitlist, deep links, authentication, and host and booker screens in the app. The vouch recipient is a name and is not verified.
 
-AI use: I used Claude Code to write most of the code, and Codex to review it in three rounds.
+AI use: I wrote the plans and made the product and design decisions. Claude Code wrote most of the code, and Codex reviewed it in three rounds.
 
 ## Trade-offs
 
