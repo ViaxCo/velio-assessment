@@ -79,7 +79,12 @@ class _EnterCodeScreenState extends State<EnterCodeScreen> {
               textInputAction: TextInputAction.go,
               onSubmitted: (_) => _submit(),
               style: const TextStyle(fontSize: 20, letterSpacing: 2, fontWeight: FontWeight.w700),
-              decoration: InputDecoration(hintText: 'K7QM2XPA', errorText: _error, errorMaxLines: 2),
+              decoration: InputDecoration(
+                hintText: 'Code or link',
+                hintStyle: const TextStyle(color: muted, letterSpacing: 0, fontWeight: FontWeight.w400),
+                errorText: _error,
+                errorMaxLines: 2,
+              ),
             ),
             const SizedBox(height: 16),
             PressScale(child: FilledButton(onPressed: _submit, child: const Text('Open invite'))),
