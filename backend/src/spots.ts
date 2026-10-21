@@ -7,9 +7,10 @@ import { inviteGroup } from "./users.ts";
 
 const inviteUsed = () => new AppError(410, "invite_used", "This personal invite has already been used.");
 
-async function noSpotError(trx: Knex.Transaction, activityId: string) {
+async function noSpotError(trx: Knex.Transaction, activityId: string, userId: string) {
   const activity = await trx("activities").where({ id: activityId }).first();
   if (!activity) return new AppError(404, "not_found", "This activity doesn't exist.");
+  if (activity.hostId === userId) return new AppError(400, "own_activity", "You're hosting this activity.");
   if (activity.startsAt <= new Date()) return new AppError(410, "activity_started", "This activity has already started.");
   return new AppError(409, "sold_out", "Someone just took the last spot. This activity is full.");
 }
@@ -17,11 +18,12 @@ async function noSpotError(trx: Knex.Transaction, activityId: string) {
 async function reserveSpot(trx: Knex.Transaction, activityId: string, userId: string, planId: string | null) {
   const [activity] = await trx("activities")
     .where({ id: activityId })
+    .whereNot({ host_id: userId })
     .where("spots_taken", "<", trx.ref("capacity"))
     .where("starts_at", ">", trx.fn.now())
     .update({ spots_taken: trx.raw("spots_taken + 1"), version: trx.raw("version + 1") })
     .returning(["id", "spots_taken", "capacity", "version"]);
-  if (!activity) throw await noSpotError(trx, activityId);
+  if (!activity) throw await noSpotError(trx, activityId, userId);
 
   const plan = planId ?? (await trx("plans").insert({ activity_id: activityId, created_by: userId }).returning("id"))[0].id;
   const [booking] = await trx("bookings")

@@ -109,6 +109,20 @@ describe("invites and attribution", () => {
     expect((await claim(vouch.code, winner)).status).toBe(200);
   });
 
+  it("does not let anyone claim their own invite, or the host take a spot", async () => {
+    const host = await servers.createUser("Host");
+    const activityId = await servers.createActivity(host, 5);
+    const booker = await servers.createUser("Booker");
+    await book(activityId, booker);
+    const share = await invite(activityId, booker, { rail: "public" });
+
+    expect((await claim(share.code, booker)).body.error).toBe("own_invite");
+    expect((await claim(share.code, host)).body.error).toBe("own_activity");
+    expect((await book(activityId, host)).body.error).toBe("own_activity");
+    const activity = await servers.db("activities").where({ id: activityId }).first();
+    expect(activity.spotsTaken).toBe(1);
+  });
+
   it("keeps attribution and events append-only", async () => {
     await expect(servers.db("attributions").update({ rail: "public" })).rejects.toThrow(/append-only/);
     await expect(servers.db("attributions").delete()).rejects.toThrow(/append-only/);
