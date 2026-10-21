@@ -1,23 +1,25 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { api, type Invite, type Rail } from "@/lib/api";
+import { api, invitesQuery, type Invite, type Rail } from "@/lib/api";
 import { useIdentity } from "@/lib/identity";
 import { Button, inputClass, Notice } from "./ui";
 
 export function InvitePanel({ activityId, title }: { activityId: string; title: string }) {
   const { user } = useIdentity();
-  const [vouches, setVouches] = useState<Invite[]>([]);
-  const [publicInvite, setPublicInvite] = useState<Invite>();
+  const queryClient = useQueryClient();
+  const query = invitesQuery(activityId, user!.id);
+  const invites = useQuery({ ...query, enabled: user!.invitesEnabled });
+  const vouches = invites.data?.filter((invite) => invite.rail === "vouch") ?? [];
+  const publicInvite = invites.data?.find((invite) => invite.rail === "public");
   const [recipient, setRecipient] = useState("");
 
   const create = useMutation({
     mutationFn: (body: { rail: Rail; recipient?: string }) => api.createInvite(user!.id, activityId, body),
     onSuccess: (invite) => {
-      if (invite.rail === "public") return setPublicInvite(invite);
-      setVouches((current) => [invite, ...current]);
-      setRecipient("");
+      if (invite.rail === "vouch") setRecipient("");
+      return queryClient.invalidateQueries({ queryKey: query.queryKey });
     },
   });
 
@@ -61,9 +63,13 @@ export function InvitePanel({ activityId, title }: { activityId: string; title: 
         <div key={invite.code} className="animate-rise space-y-2 rounded-2xl bg-white/10 p-3">
           <div className="flex items-center justify-between text-sm">
             <span className="font-bold">Vouch for {invite.recipient}</span>
-            <span className="font-mono text-xs tracking-widest text-lime">{invite.code}</span>
+            {invite.used ? (
+              <span className="font-bold text-lime">Claimed</span>
+            ) : (
+              <span className="font-mono text-xs tracking-widest text-lime">{invite.code}</span>
+            )}
           </div>
-          <InviteLink invite={invite} title={title} />
+          {!invite.used && <InviteLink invite={invite} title={title} />}
         </div>
       ))}
 

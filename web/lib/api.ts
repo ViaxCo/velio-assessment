@@ -64,6 +64,11 @@ export const activityQuery = (id: string) => ({
   queryFn: () => api.getActivity(id),
 });
 
+export const invitesQuery = (activityId: string, userId: string) => ({
+  queryKey: ["activity", activityId, "invites", userId],
+  queryFn: () => api.listInvites(userId, activityId),
+});
+
 export const statsQuery = { queryKey: ["stats"], queryFn: () => api.stats() };
 
 export class ApiError extends Error {
@@ -104,6 +109,8 @@ export const api = {
     request<Booking>(`/activities/${activityId}/bookings`, { method: "POST", userId }),
   createInvite: (userId: string, activityId: string, body: { rail: Rail; recipient?: string }) =>
     request<Invite>(`/activities/${activityId}/invites`, { method: "POST", userId, body }),
+  listInvites: (userId: string, activityId: string) =>
+    request<(Invite & { used: boolean })[]>(`/activities/${activityId}/invites`, { userId }),
   getInvite: (code: string, userId: string) => request<InviteDetail>(`/invites/${code}`, { userId }),
   claim: (code: string, userId: string, name: string) =>
     request<Booking>(`/invites/${code}/claim`, { method: "POST", body: { userId, name } }),
