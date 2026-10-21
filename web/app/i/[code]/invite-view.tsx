@@ -41,12 +41,13 @@ function Invite({ invite }: { invite: InviteDetail }) {
   const { activity } = invite;
   useLiveAvailability(activity.id);
 
+  const isGuest = userId !== invite.inviterId && userId !== activity.hostId;
   const tracked = useRef(false);
   useEffect(() => {
-    if (tracked.current || !userId) return;
+    if (tracked.current || !userId || !isGuest) return;
     tracked.current = true;
     api.track({ name: "invite_opened", code: invite.code, actorId: userId });
-  }, [invite.code, userId]);
+  }, [invite.code, userId, isGuest]);
 
   const vouch = invite.rail === "vouch";
 
@@ -91,15 +92,35 @@ function ClaimState({ invite }: { invite: InviteDetail }) {
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["invite", invite.code] }),
   });
 
+  const activityLink = (
+    <Link href={`/activities/${activity.id}`} className="block font-medium underline transition-opacity duration-300 hover:opacity-60">
+      See who’s going
+    </Link>
+  );
+
+  if (invite.inviterId === userId) {
+    return (
+      <>
+        <Notice tone="info" title="This is your invite">Share the link with your friends.</Notice>
+        {activityLink}
+      </>
+    );
+  }
+  if (activity.hostId === userId) {
+    return (
+      <>
+        <Notice tone="info" title="You’re hosting this one">{invite.inviterName} shared this link with their friends.</Notice>
+        {activityLink}
+      </>
+    );
+  }
   if (claim.isSuccess || invite.joined) {
     return (
       <>
         <Notice tone="success" title="You're in the plan!">
           {invite.inviterName} will see you’ve joined.
         </Notice>
-        <Link href={`/activities/${activity.id}`} className="block font-medium underline transition-opacity duration-300 hover:opacity-60">
-          See who’s going
-        </Link>
+        {activityLink}
       </>
     );
   }

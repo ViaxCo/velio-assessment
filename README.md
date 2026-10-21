@@ -105,6 +105,7 @@ I chose SSE over WebSockets because the data goes one way, it works through most
 ### Invites and attribution
 
 - Only a booker or the host of an activity can create an invite.
+- Nobody can claim their own invite, and the host never takes a spot in their own activity. The invite page tells them so, and does not count their visit as an open.
 - When a guest claims, one transaction creates the user with `generation = inviter.generation + 1`, takes a spot, writes the `attributions` row and writes a `spot_claimed` event.
 - A claim makes a booking in the same way as a direct booking, so the guest becomes a booker. They can then invite their own friends from the web. "Guest" is how a person arrived, not a stored role, and `attributions` and `generation` keep that history.
 - A database trigger rejects every `UPDATE`, `DELETE` and `TRUNCATE` on `attributions` and `events`. History cannot change, even by mistake. A correction must be a new row.
