@@ -82,7 +82,7 @@ function Sections({ stats: { slos, goals, funnel, holdout } }: { stats: Stats })
 
       <Section title="Holdout: plans that happen per user">
         {holdout.map((row) => (
-          <Row key={row.inviteGroup} label={row.inviteGroup} hint={`${row.users} original users · ${row.plansHappened} activities that ran with 2+ bookings`}>
+          <Row key={row.inviteGroup} label={row.inviteGroup} hint={`${row.users} original users · ${row.plansHappened} in total from each user's activities that ran with 2+ bookings`}>
             {row.plansHappenedPerUser ?? "—"}
           </Row>
         ))}
